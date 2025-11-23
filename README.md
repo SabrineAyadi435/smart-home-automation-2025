@@ -1,14 +1,26 @@
 # Smart Home Automation Simulator
 
-A Java-based object-oriented project simulating a smart home system with various devices, automation rules, energy management, and a JavaFX graphical interface.
+A Java-based object-oriented project simulating a smart home system with various devices, automation rules, energy management, and an interactive JavaFX floor plan interface.
+
+## ✨ New Features - Floor Plan UI
+
+🏠 **Realistic House Structure** - Actual house with roof, walls, doors, and windows  
+🏗️ **Architectural Details** - Triangular roof with chimney, interior walls with doorways  
+📱 **8 Device Types** - Light, Thermostat, TV, Plug, Lock, Camera, Sensor, Speaker  
+➕ **Dynamic Room/Device Creation** - Add rooms and devices on-the-fly  
+🎨 **Customizable Room Colors** - Choose from 10 color palettes  
+⚡ **Real-time Energy Monitoring** - Color-coded consumption dashboard  
+🎮 **Device-Specific Controls** - Sliders, toggles, and action buttons  
+💅 **Modern UI** - Hover effects, tooltips, smooth transitions
 
 ## Features
 
-- **Smart Devices**: Light, Thermostat, SmartTV, MotionSensor
+- **Smart Devices**: Light, Thermostat, SmartTV, SmartPlug, SmartLock, Camera, MotionSensor, Speaker
 - **OOP Principles**: Abstract classes, interfaces, inheritance, polymorphism
 - **Automation Engine**: IF-THEN rule system
 - **Energy Management**: Real-time energy consumption dashboard
-- **JavaFX GUI**: Interactive graphical interface with device controls
+- **Interactive Floor Plan GUI**: Visual house layout with clickable room tiles
+- **Dynamic Device Management**: Add rooms and devices through the UI
 - **Exception Handling**: Custom exceptions for error management
 
 ## Project Structure
@@ -17,12 +29,17 @@ A Java-based object-oriented project simulating a smart home system with various
 src/main/java/com/smarthome/
 ├── Main.java (Console version)
 ├── gui/
-│   └── SmartHomeGUI.java (JavaFX GUI)
+│   ├── FloorPlanGUI.java (NEW - Interactive floor plan UI)
+│   └── SmartHomeGUI.java (Original list-based GUI)
 ├── model/
 │   ├── SmartDevice.java (abstract)
 │   ├── Light.java
 │   ├── Thermostat.java
 │   ├── SmartTV.java
+│   ├── SmartPlug.java (NEW)
+│   ├── SmartLock.java (NEW)
+│   ├── Camera.java (NEW)
+│   ├── Speaker.java (NEW)
 │   ├── MotionSensor.java
 │   ├── Room.java
 │   └── Home.java
@@ -37,6 +54,10 @@ src/main/java/com/smarthome/
 │   └── Rule.java
 └── exceptions/
     └── DeviceNotFoundException.java
+
+src/main/resources/
+├── floorplan.css (NEW - Floor plan styling)
+└── style.css (Original styling)
 ```
 
 ## Prerequisites
@@ -53,59 +74,99 @@ src/main/java/com/smarthome/
 **Option 2: Using Maven (recommended)**
 Create a `pom.xml` file in the project root (see below)
 
-## How to Run
+## Quick Start
 
-### Method 1: Console Version (No GUI)
+### 🚀 Recommended: Using Maven
 
 ```bash
-# Compile
-javac -d bin src/main/java/com/smarthome/**/*.java
+cd JAVA_Project
+mvn clean compile
+mvn javafx:run
+```
 
-# Run
+### 🎯 Using the Launcher Script
+
+```bash
+chmod +x run-gui.sh
+./run-gui.sh
+# Select option 1 for Floor Plan UI (recommended)
+# Select option 2 for original List View UI
+```
+
+### Alternative Methods
+
+#### Method 1: Console Version (No GUI)
+
+```bash
+javac -d bin src/main/java/com/smarthome/**/*.java
 java -cp bin com.smarthome.Main
 ```
 
-### Method 2: JavaFX GUI Version
+#### Method 2: Run Specific GUI
 
-**If JavaFX is in your JDK:**
+**Floor Plan UI (New):**
 ```bash
-# Compile
-javac -d bin src/main/java/com/smarthome/**/*.java
-
-# Run
-java -cp bin com.smarthome.gui.SmartHomeGUI
+mvn exec:java -Dexec.mainClass="com.smarthome.gui.FloorPlanGUI"
 ```
 
-**If using separate JavaFX SDK:**
+**List View UI (Original):**
+```bash
+mvn exec:java -Dexec.mainClass="com.smarthome.gui.SmartHomeGUI"
+```
+
+#### Method 3: Manual Compilation with JavaFX
+
 ```bash
 # Compile
 javac --module-path /path/to/javafx-sdk/lib --add-modules javafx.controls \
   -d bin src/main/java/com/smarthome/**/*.java
 
-# Run
+# Run Floor Plan UI
 java --module-path /path/to/javafx-sdk/lib --add-modules javafx.controls \
-  -cp bin com.smarthome.gui.SmartHomeGUI
-```
-
-**Replace `/path/to/javafx-sdk` with your actual JavaFX SDK path**
-
-### Method 3: Using Maven (Recommended)
-
-If you have Maven installed:
-
-```bash
-# Compile and run
-mvn clean javafx:run
+  -cp bin com.smarthome.gui.FloorPlanGUI
 ```
 
 ## GUI Features
 
-The JavaFX interface includes:
+### Floor Plan UI (New - Recommended)
+
+The interactive floor plan interface includes:
+
+- **🏠 Visual Floor Plan**: House layout with room tiles in a grid
+- **🎨 Room Customization**: Choose from 10 color palettes for each room
+- **➕ Add Rooms**: Create new rooms dynamically with custom names and colors
+- **📱 Device Icons**: Visual device representation with emojis and status indicators
+- **🎮 Device Controls**: Click any device to open its control panel
+  - **Lights**: Brightness slider (0-100%)
+  - **Thermostat**: Temperature control (10-35°C)
+  - **Smart TV**: Volume adjustment
+  - **Smart Plug**: Power toggle
+  - **Smart Lock**: Lock/unlock button
+  - **Camera**: Recording controls
+  - **Motion Sensor**: Motion simulation
+  - **Speaker**: Play/pause and volume
+- **⚡ Energy Dashboard**: Real-time consumption with color coding
+  - Green: < 25 kWh
+  - Orange: 25-50 kWh
+  - Red: > 50 kWh
+- **💡 Hover Effects**: Tooltips, highlights, and smooth transitions
+- **🔄 Global Controls**: Turn all devices on/off, refresh display
+
+### List View UI (Original)
+
+The original list-based interface includes:
 - **Device Control Panel**: View and control all devices by room
-- **Energy Dashboard**: Real-time energy consumption monitoring with color-coded alerts
+- **Energy Dashboard**: Real-time energy consumption monitoring
 - **Automation Panel**: View and trigger automation rules
-- **Interactive Controls**: Sliders for brightness, toggle buttons for on/off
+- **Interactive Controls**: Sliders for brightness, toggle buttons
 - **Bulk Operations**: Turn all devices on/off with one click
+
+## 📚 Documentation
+
+- **[FLOORPLAN_GUIDE.md](FLOORPLAN_GUIDE.md)** - Complete floor plan UI user guide
+- **[TEST_PLAN.md](TEST_PLAN.md)** - Comprehensive test cases and manual testing steps
+- **[SETUP.md](SETUP.md)** - Detailed setup instructions
+- **[TODO.MD](TODO.MD)** - Future enhancements and roadmap
 
 ## OOP Concepts Demonstrated
 

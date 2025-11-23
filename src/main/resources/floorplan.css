@@ -1,0 +1,321 @@
+/* Smart Home Floor Plan Theme */
+
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-background-color: #f5f7fa;
+}
+
+/* Top Bar */
+.top-bar {
+    -fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e);
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);
+}
+
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.control-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.control-button:hover {
+    -fx-background-color: #2980b9;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Floor Plan Container */
+.floor-plan {
+    -fx-background-color: #e8f5e9;
+    -fx-padding: 20;
+    -fx-border-color: #8b4513;
+    -fx-border-width: 4;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+/* House Structure */
+.house-body {
+    -fx-background-color: #f5f5dc;
+    -fx-border-color: #8b4513;
+    -fx-border-width: 4;
+}
+
+/* Room Tile */
+.room-tile {
+    -fx-background-color: white;
+    -fx-border-color: #654321;
+    -fx-border-width: 3;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 10;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+.room-tile:hover {
+    -fx-border-color: #3498db;
+    -fx-border-width: 4;
+    -fx-effect: innershadow(gaussian, rgba(52,152,219,0.3), 12, 0, 0, 0);
+}
+
+.room-header {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.room-type-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #7f8c8d;
+}
+
+/* Device Icons */
+.device-icon {
+    -fx-font-size: 24px;
+    -fx-padding: 8;
+    -fx-background-radius: 50%;
+    -fx-min-width: 45px;
+    -fx-min-height: 45px;
+    -fx-alignment: center;
+}
+
+.device-icon.light {
+    -fx-background-color: #f39c12;
+    -fx-text-fill: white;
+}
+
+.device-icon.thermostat {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+}
+
+.device-icon.plug {
+    -fx-background-color: #9b59b6;
+    -fx-text-fill: white;
+}
+
+.device-icon.lock {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+}
+
+.device-icon.camera {
+    -fx-background-color: #16a085;
+    -fx-text-fill: white;
+}
+
+.device-icon.sensor {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+}
+
+.device-icon.speaker {
+    -fx-background-color: #2980b9;
+    -fx-text-fill: white;
+}
+
+.device-icon.tv {
+    -fx-background-color: #8e44ad;
+    -fx-text-fill: white;
+}
+
+.device-icon.off {
+    -fx-opacity: 0.4;
+}
+
+/* Device Card */
+.device-card {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 8;
+    -fx-spacing: 5;
+}
+
+.device-card:hover {
+    -fx-background-color: #e9ecef;
+    -fx-border-color: #3498db;
+}
+
+.device-name {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.device-status {
+    -fx-font-size: 10px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.device-status.on {
+    -fx-text-fill: #27ae60;
+}
+
+.device-status.off {
+    -fx-text-fill: #95a5a6;
+}
+
+/* Toggle Button */
+.toggle-button {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-padding: 4 10;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+}
+
+.toggle-button.on {
+    -fx-background-color: #27ae60;
+}
+
+.toggle-button:hover {
+    -fx-opacity: 0.8;
+}
+
+/* Add Button */
+.add-button {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.add-button:hover {
+    -fx-background-color: #27ae60;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Modal Dialog */
+.modal-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);
+}
+
+.modal-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.form-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #34495e;
+    -fx-font-weight: bold;
+}
+
+.text-input {
+    -fx-font-size: 13px;
+    -fx-padding: 8;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.text-input:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2;
+}
+
+/* Energy Dashboard */
+.energy-panel {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.energy-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.energy-low {
+    -fx-text-fill: #27ae60;
+}
+
+.energy-medium {
+    -fx-text-fill: #f39c12;
+}
+
+.energy-high {
+    -fx-text-fill: #e74c3c;
+}
+
+/* Slider */
+.slider .thumb {
+    -fx-background-color: #3498db;
+}
+
+.slider .track {
+    -fx-background-color: #bdc3c7;
+}
+
+/* Tooltip */
+.tooltip {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 5 10;
+    -fx-background-radius: 4;
+}
+
+/* Scroll Pane */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Color Picker for Room */
+.color-option {
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-border-width: 2;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+}
+
+.color-option:hover {
+    -fx-border-color: #3498db;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.color-option.selected {
+    -fx-border-color: #2c3e50;
+    -fx-border-width: 3;
+}
