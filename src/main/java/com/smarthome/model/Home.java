@@ -1,6 +1,6 @@
 package com.smarthome.model;
 
-import com.smarthome.exceptions.DeviceNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,15 +22,7 @@ public class Home {
         rooms.removeIf(r -> r.getName().equals(roomName));
     }
     
-    public SmartDevice findDeviceById(String deviceId) throws DeviceNotFoundException {
-        for (Room room : rooms) {
-            SmartDevice device = room.findDeviceById(deviceId);
-            if (device != null) {
-                return device;
-            }
-        }
-        throw new DeviceNotFoundException("Device with ID " + deviceId + " not found in home");
-    }
+    
     
     public List<SmartDevice> getAllDevices() {
         List<SmartDevice> allDevices = new ArrayList<>();
