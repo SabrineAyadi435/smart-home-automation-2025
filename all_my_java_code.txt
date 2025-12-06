@@ -1,0 +1,3412 @@
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\Main.java
+package com.smarthome;
+
+import com.smarthome.controller.HomeController;
+import com.smarthome.model.*;
+import com.smarthome.automation.AutomationEngine;
+import com.smarthome.automation.Rule;
+
+public class Main {
+    public static void main(String[] args) {
+        // Create home and controller
+        Home myHome = new Home("My Smart Home");
+        HomeController controller = new HomeController(myHome, "DemoCity", "DemoCountry");
+        
+        // Create rooms
+        Room livingRoom = new Room("Living Room");
+        Room bedroom = new Room("Bedroom");
+        
+        // Create devices
+        Light livingRoomLight = new Light("LR-Light-01", "Living Room Light", 100);
+        Thermostat thermostat = new Thermostat("TH-01", "Main Thermostat", 22.0);
+        SmartTV tv = new SmartTV("TV-01", "Living Room TV");
+        MotionSensor sensor = new MotionSensor("MS-01", "Entry Sensor");
+        SmartMirror mirror = new SmartMirror("MIRROR-01", "Smart Mirror");
+        
+        // Add devices to rooms
+        livingRoom.addDevice(livingRoomLight);
+        livingRoom.addDevice(tv);
+        livingRoom.addDevice(sensor);
+        livingRoom.addDevice(mirror);
+        bedroom.addDevice(thermostat);
+        
+        // Add rooms to home
+        myHome.addRoom(livingRoom);
+        myHome.addRoom(bedroom);
+        
+        // START ADHAN MONITORING
+        System.out.println("🕌 Starting Adhan-aware TV monitoring...");
+        controller.getAutomationEngine().startAdhanMonitoring();
+        
+        // Display all devices
+        System.out.println("\n=== Smart Home Status ===");
+        controller.listAllDevices();
+        
+        // Display prayer times
+        System.out.println("\n=== Prayer Times ===");
+        System.out.println("Next prayer: " + controller.demoGetNextPrayer());
+        System.out.println("Current simulated time: " + controller.demoGetCurrentTime());
+        
+        // Control devices
+        System.out.println("\n=== Controlling Devices ===");
+        controller.turnOnDevice("LR-Light-01");
+        controller.turnOnDevice("TH-01");
+        controller.turnOnDevice("TV-01"); // Make sure TV is on for demo
+        
+        // Set specific properties
+        livingRoomLight.setBrightness(75);
+        thermostat.setTargetTemperature(24.0);
+        
+        System.out.println("\n=== Updated Status ===");
+        controller.listAllDevices();
+        
+        // Automation example
+        System.out.println("\n=== Automation Rules ===");
+        AutomationEngine engine = controller.getAutomationEngine();
+        Rule motionRule = new Rule("Motion Light Rule", 
+            () -> sensor.isMotionDetected(),
+            () -> livingRoomLight.turnOn()
+        );
+        engine.addRule(motionRule);
+        
+        // Simulate motion detection
+        sensor.detectMotion();
+        engine.evaluateRules();
+        
+        // DEMO: Show how to fast forward to next prayer for demonstration
+        System.out.println("\n=== Demo Controls Available ===");
+        System.out.println("Use these methods in your GUI:");
+        System.out.println("- demoFastForwardToNextPrayer()");
+        System.out.println("- demoSetTime(hours, minutes)");
+        System.out.println("- demoEnableTimeAcceleration(factor)");
+        
+        // Example: Fast forward to next prayer (for demo purposes)
+        System.out.println("\n⏭️ Fast forwarding to next prayer for demo...");
+        controller.demoFastForwardToNextPrayer();
+        
+        System.out.println("\n=== Energy Consumption ===");
+        controller.displayEnergyConsumption();
+        
+        // TEST SMART MIRROR FUNCTIONALITY WITH CALENDAR INTEGRATION
+        System.out.println("\n🧪 TESTING SMART MIRROR WITH CALENDAR INTEGRATION...");
+        testSmartMirror(mirror);
+        
+        // TEST ADHAN INTEGRATION
+        System.out.println("\n🧪 TESTING ADHAN INTEGRATION...");
+        testAdhanIntegration(controller, tv);
+        
+        // Keep the program running to monitor Adhan
+        System.out.println("\n=== System Running ===");
+        System.out.println("Adhan monitoring is active in the background...");
+        System.out.println("TVs will automatically mute during prayer times");
+        
+        // Keep the main thread alive
+        try {
+            Thread.sleep(30000); // Keep running for 30 seconds to see monitoring in action
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static void testSmartMirror(SmartMirror mirror) {
+        System.out.println("\n=== SMART MIRROR TEST ===");
+        
+        // Test 1: Basic functionality
+        System.out.println("1. Testing basic functionality...");
+        mirror.turnOn();
+        System.out.println("   Mirror status: " + mirror.getStatus());
+        
+        // Test 2: Calendar Service Setup
+        System.out.println("2. Setting up Calendar Service...");
+        mirror.setCalendarEmail("eya.hafsi@example.com"); // Set user email for calendar
+        System.out.println("   " + mirror.getCalendarStatus());
+        
+        // Test 3: Islamic calendar display
+        System.out.println("3. Testing Islamic calendar...");
+        mirror.displayIslamicCalendar();
+        
+        // Test 4: Manual personalization (backup data)
+        System.out.println("4. Adding manual events/reminders...");
+        mirror.addReminder("Team meeting at 10:00 AM");
+        mirror.addReminder("Pick up groceries");
+        mirror.addCalendarEvent("Doctor appointment at 2:00 PM");
+        mirror.addCalendarEvent("Dinner with family at 7:00 PM");
+        mirror.setWeather("Sunny", 25.5);
+        
+        // Test 5: Calendar Sync Test
+        System.out.println("5. Testing Calendar Sync...");
+        mirror.syncCalendarEvents();
+        mirror.syncReminders();
+        
+        // Test 6: Display comprehensive briefing (with auto-synced data)
+        System.out.println("6. Testing comprehensive briefing...");
+        mirror.displayBriefing();
+        
+        // Test 7: Quran verse display
+        System.out.println("7. Testing Quran verse display...");
+        mirror.displayQuranVerseOnly();
+        
+        // Test 8: Refresh verse
+        System.out.println("8. Testing verse refresh...");
+        mirror.refreshVerse();
+        
+        // Test 9: Show Qibla information
+        System.out.println("9. Qibla direction for your house:");
+        System.out.println("   " + mirror.getQiblaDirection());
+        System.out.println("   City: " + mirror.getCity());
+        
+        // Test 10: Test calendar commands
+        System.out.println("10. Testing calendar commands...");
+        mirror.executeCommand("SYNC_CALENDAR");
+        
+        System.out.println("=== SMART MIRROR TEST COMPLETE ===");
+    }
+    
+    private static void testAdhanIntegration(HomeController controller, SmartTV testTV) {
+        System.out.println("\n=== ADHAN INTEGRATION TEST ===");
+        
+        // Test 1: Check if AdhanService is working
+        System.out.println("1. Testing AdhanService...");
+        System.out.println("   Current time: " + controller.demoGetCurrentTime());
+        System.out.println("   Next prayer: " + controller.demoGetNextPrayer());
+        
+        // Test 2: Check if TV mute functionality works
+        System.out.println("2. Testing TV mute functionality...");
+        if (testTV != null) {
+            System.out.println("   Found TV: " + testTV.getName());
+            System.out.println("   TV status before: " + testTV.getStatus());
+            
+            // Test mute
+            testTV.mute();
+            System.out.println("   TV status after mute: " + testTV.getStatus());
+            
+            // Test unmute
+            testTV.unmute();
+            System.out.println("   TV status after unmute: " + testTV.getStatus());
+        } else {
+            System.out.println("   ❌ No TV found for testing!");
+        }
+        
+        // Test 3: Test manual time setting to trigger Adhan
+        System.out.println("3. Testing Adhan detection...");
+        System.out.println("   Setting time to 1 minute before Fajr (05:59)...");
+        controller.demoSetTime(5, 59);
+        
+        // Wait a bit and check if Adhan is detected
+        try {
+            Thread.sleep(1000); // Wait 1 second
+            System.out.println("   Current time: " + controller.demoGetCurrentTime());
+            
+            // Debug: Show what's happening
+            System.out.println("   🔍 Debug - Checking prayer times:");
+            controller.getAutomationEngine().getAdhanService().getPrayerTimes().forEach((prayer, time) -> {
+                System.out.println("      " + prayer + ": " + time);
+            });
+            
+            // Check Adhan status
+            boolean isAdhanTime = controller.getAutomationEngine().getAdhanService().isAdhanTime();
+            System.out.println("   Is Adhan time? " + (isAdhanTime ? "✅ YES" : "❌ NO"));
+            
+            if (isAdhanTime) {
+                System.out.println("   🎉 SUCCESS: Adhan detection works!");
+            } else {
+                System.out.println("   🔧 Let's try setting time to exactly Fajr (06:00)...");
+                controller.demoSetTime(6, 0);
+                Thread.sleep(1000);
+                System.out.println("   Current time: " + controller.demoGetCurrentTime());
+                isAdhanTime = controller.getAutomationEngine().getAdhanService().isAdhanTime();
+                System.out.println("   Is Adhan time at 06:00? " + (isAdhanTime ? "✅ YES" : "❌ NO"));
+                
+                if (!isAdhanTime) {
+                    System.out.println("   🔧 Let's try during Adhan window (06:02)...");
+                    controller.demoSetTime(6, 2);
+                    Thread.sleep(1000);
+                    System.out.println("   Current time: " + controller.demoGetCurrentTime());
+                    isAdhanTime = controller.getAutomationEngine().getAdhanService().isAdhanTime();
+                    System.out.println("   Is Adhan time at 06:02? " + (isAdhanTime ? "✅ YES" : "❌ NO"));
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        // Test 4: Test automatic TV muting
+        System.out.println("4. Testing automatic TV muting...");
+        System.out.println("   Setting time to during Fajr Adhan (06:02)...");
+        controller.demoSetTime(6, 2);
+        System.out.println("   Waiting for Adhan detection...");
+        try {
+            Thread.sleep(3000); // Wait 3 seconds for monitoring thread to detect
+            
+            // Force check to see if Adhan should be detected
+            boolean shouldBeAdhanTime = controller.getAutomationEngine().getAdhanService().isAdhanTime();
+            System.out.println("   Should Adhan be detected? " + (shouldBeAdhanTime ? "✅ YES" : "❌ NO"));
+            
+            // Check if TV got muted automatically
+            if (testTV != null && testTV.isMuted()) {
+                System.out.println("   ✅ SUCCESS: TV automatically muted during Adhan!");
+            } else {
+                System.out.println("   ❌ TV was not muted automatically");
+                System.out.println("   TV status: " + testTV.getStatus());
+                System.out.println("   🔧 Manually triggering mute to verify TV works...");
+                controller.muteAllTVs();
+                System.out.println("   TV status after manual mute: " + testTV.getStatus());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        // Test 5: Test automatic unmuting after Adhan
+        System.out.println("5. Testing automatic unmuting after Adhan...");
+        System.out.println("   Setting time to after Fajr Adhan (06:10)...");
+        controller.demoSetTime(6, 10);
+        System.out.println("   Waiting for Adhan to finish...");
+        try {
+            Thread.sleep(3000); // Wait 3 seconds for monitoring thread to detect
+            
+            // Force check to see if Adhan should NOT be detected
+            boolean shouldNotBeAdhanTime = !controller.getAutomationEngine().getAdhanService().isAdhanTime();
+            System.out.println("   Should Adhan be finished? " + (shouldNotBeAdhanTime ? "✅ YES" : "❌ NO"));
+            
+            // Check if TV got unmuted automatically
+            if (testTV != null && !testTV.isMuted()) {
+                System.out.println("   ✅ SUCCESS: TV automatically unmuted after Adhan!");
+            } else {
+                System.out.println("   ❌ TV was not unmuted automatically");
+                System.out.println("   TV status: " + testTV.getStatus());
+                System.out.println("   🔧 Manually triggering unmute to verify TV works...");
+                controller.unmuteAllTVs();
+                System.out.println("   TV status after manual unmute: " + testTV.getStatus());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println("=== TEST COMPLETE ===");
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\automation\AutomationEngine.java
+package com.smarthome.automation;
+
+import com.smarthome.controller.HomeController;
+import com.smarthome.model.AdhanService;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AutomationEngine {
+    private List<Rule> rules;
+    private HomeController homeController;
+    private AdhanService adhanService;
+    private boolean wasAdhanTime = false;
+    
+    public AutomationEngine() {
+        this.rules = new ArrayList<>();
+    }
+    
+    public AutomationEngine(HomeController homeController) {
+        this.rules = new ArrayList<>();
+        this.homeController = homeController;
+        // Initialize with simulation (city/country parameters kept for compatibility)
+        this.adhanService = new AdhanService("DemoCity", "DemoCountry");
+    }
+    
+    public AutomationEngine(HomeController homeController, String city, String country) {
+        this.rules = new ArrayList<>();
+        this.homeController = homeController;
+        this.adhanService = new AdhanService(city, country);
+    }
+    
+    public void checkAdhanAndMuteTVs() {
+        if (adhanService == null || homeController == null) {
+            return; // Skip if not properly initialized
+        }
+        
+        boolean isAdhanTime = adhanService.isAdhanTime();
+        
+        if (isAdhanTime && !wasAdhanTime) {
+            // Adhan just started - mute all TVs
+            System.out.println("🕌 Adhan started at " + adhanService.getCurrentSimulatedTime() + " - muting all TVs");
+            homeController.muteAllTVs();
+            wasAdhanTime = true;
+        } else if (!isAdhanTime && wasAdhanTime) {
+            // Adhan finished - unmute all TVs
+            System.out.println("✅ Adhan finished at " + adhanService.getCurrentSimulatedTime() + " - unmuting all TVs");
+            homeController.unmuteAllTVs();
+            wasAdhanTime = false;
+        }
+    }
+    
+    public void startAdhanMonitoring() {
+        if (adhanService == null || homeController == null) {
+            System.err.println("❌ Cannot start Adhan monitoring - HomeController not initialized");
+            return;
+        }
+        
+        Thread monitoringThread = new Thread(() -> {
+            while (true) {
+                try {
+                    checkAdhanAndMuteTVs();
+                    Thread.sleep(1000); // Check every second (more responsive for demo)
+                } catch (InterruptedException e) {
+                    System.err.println("Adhan monitoring interrupted");
+                    break;
+                }
+            }
+        });
+        monitoringThread.setDaemon(true);
+        monitoringThread.start();
+        System.out.println("✅ Adhan monitoring started with simulated time");
+    }
+    
+    public AdhanService getAdhanService() {
+        return adhanService;
+    }
+    
+    // Demo control methods for GUI integration
+    public void demoFastForwardToNextPrayer() {
+        if (adhanService != null) {
+            adhanService.fastForwardToNextPrayer();
+        }
+    }
+    
+    public void demoSetTime(int hours, int minutes) {
+        if (adhanService != null) {
+            adhanService.setSimulatedTime(java.time.LocalTime.of(hours, minutes));
+        }
+    }
+    
+    public void demoEnableTimeAcceleration(int factor) {
+        if (adhanService != null) {
+            adhanService.enableTimeAcceleration(factor);
+        }
+    }
+    
+    public String demoGetCurrentTime() {
+        return adhanService != null ? adhanService.getCurrentSimulatedTime() : "N/A";
+    }
+    
+    public String demoGetNextPrayer() {
+        return adhanService != null ? adhanService.getNextPrayer() : "Adhan service not available";
+    }
+    
+    // Your existing rule methods
+    public void addRule(Rule rule) {
+        rules.add(rule);
+        System.out.println("Automation rule added: " + rule.getName());
+    }
+    
+    public void removeRule(String ruleName) {
+        rules.removeIf(r -> r.getName().equals(ruleName));
+    }
+    
+    public void evaluateRules() {
+        System.out.println("Evaluating automation rules...");
+        for (Rule rule : rules) {
+            rule.evaluate();
+        }
+    }
+    
+    public List<Rule> getRules() {
+        return new ArrayList<>(rules);
+    }
+    
+    // Getters and setters
+    public HomeController getHomeController() {
+        return homeController;
+    }
+    
+    public void setHomeController(HomeController homeController) {
+        this.homeController = homeController;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\automation\Rule.java
+package com.smarthome.automation;
+
+import java.util.function.BooleanSupplier;
+
+public class Rule {
+    private String name;
+    private BooleanSupplier condition;
+    private Runnable action;
+    
+    public Rule(String name, BooleanSupplier condition, Runnable action) {
+        this.name = name;
+        this.condition = condition;
+        this.action = action;
+    }
+    
+    public void evaluate() {
+        if (condition.getAsBoolean()) {
+            System.out.println("Rule '" + name + "' triggered");
+            action.run();
+        }
+    }
+    
+    public String getName() {
+        return name;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\controller\HomeController.java
+package com.smarthome.controller;
+
+import com.smarthome.model.Home;
+import com.smarthome.model.SmartDevice;
+import com.smarthome.model.Room;
+import com.smarthome.model.SmartTV;
+import com.smarthome.automation.AutomationEngine;
+import com.smarthome.interfaces.EnergyConsumer;
+import com.smarthome.exceptions.DeviceNotFoundException;
+
+public class HomeController {
+    private Home home;
+    private AutomationEngine automationEngine;
+    
+    public HomeController(Home home) {
+        this.home = home;
+        this.automationEngine = new AutomationEngine(this);
+    }
+    
+    public HomeController(Home home, String city, String country) {
+        this.home = home;
+        this.automationEngine = new AutomationEngine(this, city, country);
+    }
+    
+    // ADD THESE METHODS FOR ADHAN INTEGRATION:
+    public void muteAllTVs() {
+        for (Room room : home.getRooms()) {
+            for (SmartDevice device : room.getDevices()) {
+                if (device instanceof SmartTV) {
+                    ((SmartTV) device).mute();
+                }
+            }
+        }
+    }
+    
+    public void unmuteAllTVs() {
+        for (Room room : home.getRooms()) {
+            for (SmartDevice device : room.getDevices()) {
+                if (device instanceof SmartTV) {
+                    ((SmartTV) device).unmute();
+                }
+            }
+        }
+    }
+    
+    public AutomationEngine getAutomationEngine() {
+        return automationEngine;
+    }
+    
+    // DEMO CONTROL METHODS FOR GUI:
+    public void demoFastForwardToNextPrayer() {
+        automationEngine.demoFastForwardToNextPrayer();
+    }
+    
+    public void demoSetTime(int hours, int minutes) {
+        automationEngine.demoSetTime(hours, minutes);
+    }
+    
+    public void demoEnableTimeAcceleration(int factor) {
+        automationEngine.demoEnableTimeAcceleration(factor);
+    }
+    
+    public String demoGetCurrentTime() {
+        return automationEngine.demoGetCurrentTime();
+    }
+    
+    public String demoGetNextPrayer() {
+        return automationEngine.demoGetNextPrayer();
+    }
+    
+    // YOUR EXISTING METHODS:
+    public void listAllDevices() {
+        System.out.println("Devices in " + home.getName() + ":");
+        for (SmartDevice device : home.getAllDevices()) {
+            System.out.println("  " + device);
+        }
+    }
+    
+    public void turnOnDevice(String deviceId) {
+        try {
+            SmartDevice device = home.findDeviceById(deviceId);
+            device.turnOn();
+        } catch (DeviceNotFoundException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+    
+    public void turnOffDevice(String deviceId) {
+        try {
+            SmartDevice device = home.findDeviceById(deviceId);
+            device.turnOff();
+        } catch (DeviceNotFoundException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+    
+    public void turnOnAllDevices() {
+        for (SmartDevice device : home.getAllDevices()) {
+            device.turnOn();
+        }
+    }
+    
+    public void turnOffAllDevices() {
+        for (SmartDevice device : home.getAllDevices()) {
+            device.turnOff();
+        }
+    }
+    
+    public void displayEnergyConsumption() {
+        double totalEnergy = 0.0;
+        System.out.println("Energy Consumption Report:");
+        for (SmartDevice device : home.getAllDevices()) {
+            if (device instanceof EnergyConsumer) {
+                double consumption = ((EnergyConsumer) device).getEnergyConsumption();
+                System.out.printf("  %s: %.2f kWh\n", device.getName(), consumption);
+                totalEnergy += consumption;
+            }
+        }
+        System.out.printf("Total Energy Consumption: %.2f kWh\n", totalEnergy);
+    }
+    
+    public Home getHome() {
+        return home;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\exceptions\DeviceNotFoundException.java
+package com.smarthome.exceptions;
+
+public class DeviceNotFoundException extends Exception {
+    public DeviceNotFoundException(String message) {
+        super(message);
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\gui\FloorPlanGUI.java
+package com.smarthome.gui;
+
+import com.smarthome.controller.HomeController;
+import com.smarthome.model.*;
+import com.smarthome.automation.AutomationEngine;
+import com.smarthome.interfaces.EnergyConsumer;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class FloorPlanGUI extends Application {
+    private Home home;
+    private HomeController controller;
+    private AutomationEngine automationEngine;
+    private Pane floorPlanContainer;
+    private Label totalEnergyLabel;
+    private Map<Room, String> roomColors;
+    
+    @Override
+    public void start(Stage primaryStage) {
+        initializeSmartHome();
+        
+        primaryStage.setTitle("Smart Home Floor Plan");
+        
+        BorderPane root = new BorderPane();
+        root.getStyleClass().add("root");
+        
+        // Top bar
+        root.setTop(createTopBar());
+        
+        // Center: Floor plan
+        root.setCenter(createFloorPlanView());
+        
+        // Bottom: Energy dashboard
+        root.setBottom(createEnergyPanel());
+        
+        Scene scene = new Scene(root, 1400, 900);
+        scene.getStylesheets().add(getClass().getResource("/floorplan.css").toExternalForm());
+        
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+        updateFloorPlan();
+        updateEnergyDashboard();
+    }
+    
+    private void initializeSmartHome() {
+        home = new Home("My Smart Home");
+        controller = new HomeController(home);
+        automationEngine = new AutomationEngine();
+        roomColors = new HashMap<>();
+        
+        // Create sample rooms with devices
+        Room livingRoom = new Room("Living Room");
+        roomColors.put(livingRoom, "#FFE5B4");
+        livingRoom.addDevice(new Light("LR-L1", "Ceiling Light", 100));
+        livingRoom.addDevice(new SmartTV("LR-TV1", "Smart TV"));
+        livingRoom.addDevice(new Speaker("LR-SP1", "Smart Speaker"));
+        livingRoom.addDevice(new MotionSensor("LR-MS1", "Motion Sensor"));
+        
+        Room bedroom = new Room("Bedroom");
+        roomColors.put(bedroom, "#E6E6FA");
+        bedroom.addDevice(new Light("BR-L1", "Bedside Lamp", 80));
+        bedroom.addDevice(new Thermostat("BR-TH1", "Thermostat", 22.0));
+        bedroom.addDevice(new SmartPlug("BR-PL1", "Phone Charger"));
+        
+        Room kitchen = new Room("Kitchen");
+        roomColors.put(kitchen, "#F0FFF0");
+        kitchen.addDevice(new Light("KT-L1", "Kitchen Light", 100));
+        kitchen.addDevice(new SmartPlug("KT-PL1", "Coffee Maker"));
+        
+        Room entrance = new Room("Entrance");
+        roomColors.put(entrance, "#FFF8DC");
+        entrance.addDevice(new SmartLock("EN-LK1", "Front Door"));
+        entrance.addDevice(new Camera("EN-CM1", "Security Camera"));
+        entrance.addDevice(new Light("EN-L1", "Porch Light", 100));
+        
+        home.addRoom(livingRoom);
+        home.addRoom(bedroom);
+        home.addRoom(kitchen);
+        home.addRoom(entrance);
+    }
+    
+    private VBox createTopBar() {
+        VBox topBar = new VBox(10);
+        topBar.getStyleClass().add("top-bar");
+        topBar.setPadding(new Insets(15));
+        
+        Label title = new Label("🏠 Smart Home Floor Plan");
+        title.getStyleClass().add("title-label");
+        
+        HBox controls = new HBox(10);
+        controls.setAlignment(Pos.CENTER_LEFT);
+        
+        Button addRoomBtn = new Button("+ Add Room");
+        addRoomBtn.getStyleClass().add("add-button");
+        addRoomBtn.setOnAction(e -> showAddRoomDialog());
+        
+        Button allOnBtn = new Button("All ON");
+        allOnBtn.getStyleClass().add("control-button");
+        allOnBtn.setOnAction(e -> {
+            controller.turnOnAllDevices();
+            updateFloorPlan();
+            updateEnergyDashboard();
+        });
+        
+        Button allOffBtn = new Button("All OFF");
+        allOffBtn.getStyleClass().add("control-button");
+        allOffBtn.setOnAction(e -> {
+            controller.turnOffAllDevices();
+            updateFloorPlan();
+            updateEnergyDashboard();
+        });
+        
+        Button refreshBtn = new Button("Refresh");
+        refreshBtn.getStyleClass().add("control-button");
+        refreshBtn.setOnAction(e -> {
+            updateFloorPlan();
+            updateEnergyDashboard();
+        });
+        
+        controls.getChildren().addAll(addRoomBtn, allOnBtn, allOffBtn, refreshBtn);
+        topBar.getChildren().addAll(title, controls);
+        
+        return topBar;
+    }
+    
+    private ScrollPane createFloorPlanView() {
+        VBox container = new VBox(20);
+        container.setPadding(new Insets(20));
+        container.setAlignment(Pos.TOP_CENTER);
+        
+        // House structure with realistic layout
+        Pane houseStructure = createHouseStructure();
+        
+        container.getChildren().add(houseStructure);
+        
+        ScrollPane scrollPane = new ScrollPane(container);
+        scrollPane.setFitToWidth(true);
+        scrollPane.getStyleClass().add("scroll-pane");
+        
+        return scrollPane;
+    }
+    
+    private Pane createHouseStructure() {
+        Pane house = new Pane();
+        house.setPrefSize(1100, 700);
+        house.setStyle("-fx-background-color: #e8f5e9;"); // Lawn/exterior
+        
+        // Main house outline with roof
+        VBox houseBox = new VBox();
+        houseBox.setLayoutX(100);
+        houseBox.setLayoutY(80);
+        
+        // Roof
+        Pane roof = createRoof();
+        
+        // House body
+        Pane houseBody = new Pane();
+        houseBody.setPrefSize(900, 550);
+        houseBody.setStyle("-fx-background-color: #f5f5dc; -fx-border-color: #8b4513; -fx-border-width: 4;");
+        
+        // Draw walls and rooms
+        drawWalls(houseBody);
+        
+        // Add room containers
+        floorPlanContainer = new Pane();
+        floorPlanContainer.setPrefSize(900, 550);
+        houseBody.getChildren().add(floorPlanContainer);
+        
+        houseBox.getChildren().addAll(roof, houseBody);
+        house.getChildren().add(houseBox);
+        
+        return house;
+    }
+    
+    private Pane createRoof() {
+        Pane roofPane = new Pane();
+        roofPane.setPrefSize(900, 80);
+        
+        // Triangular roof using polygon
+        javafx.scene.shape.Polygon roof = new javafx.scene.shape.Polygon();
+        roof.getPoints().addAll(
+            0.0, 80.0,      // Bottom left
+            450.0, 0.0,     // Top center
+            900.0, 80.0     // Bottom right
+        );
+        roof.setFill(Color.web("#8b4513"));
+        roof.setStroke(Color.web("#654321"));
+        roof.setStrokeWidth(3);
+        
+        // Chimney
+        javafx.scene.shape.Rectangle chimney = new javafx.scene.shape.Rectangle(650, 20, 40, 60);
+        chimney.setFill(Color.web("#a0522d"));
+        chimney.setStroke(Color.web("#654321"));
+        chimney.setStrokeWidth(2);
+        
+        roofPane.getChildren().addAll(roof, chimney);
+        return roofPane;
+    }
+    
+    private void drawWalls(Pane houseBody) {
+        // Vertical walls
+        addWall(houseBody, 300, 0, 4, 550);    // Left vertical wall
+        addWall(houseBody, 600, 0, 4, 550);    // Right vertical wall
+        
+        // Horizontal walls
+        addWall(houseBody, 0, 275, 300, 4);    // Top left horizontal
+        addWall(houseBody, 600, 275, 300, 4);  // Top right horizontal
+        
+        // Doors (gaps in walls)
+        addDoor(houseBody, 295, 250, true);    // Door in left wall
+        addDoor(houseBody, 595, 250, true);    // Door in right wall
+        addDoor(houseBody, 425, 270, false);   // Door in center horizontal
+        
+        // Windows
+        addWindow(houseBody, 150, 50);
+        addWindow(houseBody, 150, 350);
+        addWindow(houseBody, 750, 50);
+        addWindow(houseBody, 750, 350);
+    }
+    
+    private void addWall(Pane parent, double x, double y, double width, double height) {
+        javafx.scene.shape.Rectangle wall = new javafx.scene.shape.Rectangle(x, y, width, height);
+        wall.setFill(Color.web("#8b7355"));
+        wall.setStroke(Color.web("#654321"));
+        wall.setStrokeWidth(1);
+        parent.getChildren().add(wall);
+    }
+    
+    private void addDoor(Pane parent, double x, double y, boolean vertical) {
+        javafx.scene.shape.Rectangle door = new javafx.scene.shape.Rectangle(
+            x, y, vertical ? 10 : 50, vertical ? 50 : 10
+        );
+        door.setFill(Color.web("#8b4513"));
+        door.setStroke(Color.web("#654321"));
+        door.setStrokeWidth(2);
+        
+        // Door knob
+        javafx.scene.shape.Circle knob = new javafx.scene.shape.Circle(
+            x + (vertical ? 8 : 10), 
+            y + (vertical ? 25 : 5), 
+            3
+        );
+        knob.setFill(Color.GOLD);
+        
+        parent.getChildren().addAll(door, knob);
+    }
+    
+    private void addWindow(Pane parent, double x, double y) {
+        javafx.scene.shape.Rectangle window = new javafx.scene.shape.Rectangle(x, y, 60, 50);
+        window.setFill(Color.web("#87ceeb"));
+        window.setStroke(Color.web("#654321"));
+        window.setStrokeWidth(3);
+        
+        // Window panes
+        javafx.scene.shape.Line line1 = new javafx.scene.shape.Line(x + 30, y, x + 30, y + 50);
+        javafx.scene.shape.Line line2 = new javafx.scene.shape.Line(x, y + 25, x + 60, y + 25);
+        line1.setStroke(Color.web("#654321"));
+        line2.setStroke(Color.web("#654321"));
+        line1.setStrokeWidth(2);
+        line2.setStrokeWidth(2);
+        
+        parent.getChildren().addAll(window, line1, line2);
+    }
+    
+    private HBox createEnergyPanel() {
+        HBox panel = new HBox(20);
+        panel.getStyleClass().add("energy-panel");
+        panel.setPadding(new Insets(15));
+        panel.setAlignment(Pos.CENTER);
+        
+        Label energyIcon = new Label("⚡");
+        energyIcon.setStyle("-fx-font-size: 32px;");
+        
+        VBox energyInfo = new VBox(5);
+        Label energyTitle = new Label("Total Energy Consumption");
+        energyTitle.setStyle("-fx-font-size: 14px; -fx-text-fill: #7f8c8d;");
+        
+        totalEnergyLabel = new Label("0.00 kWh");
+        totalEnergyLabel.getStyleClass().addAll("energy-label", "energy-low");
+        
+        energyInfo.getChildren().addAll(energyTitle, totalEnergyLabel);
+        panel.getChildren().addAll(energyIcon, energyInfo);
+        
+        return panel;
+    }
+    
+    private void updateFloorPlan() {
+        floorPlanContainer.getChildren().clear();
+        
+        // Position rooms in specific locations to match house layout
+        java.util.List<Room> rooms = home.getRooms();
+        
+        // Define room positions (x, y) for a realistic layout
+        double[][] positions = {
+            {20, 20},      // Top-left (Living Room)
+            {320, 20},     // Top-center (Bedroom)
+            {620, 20},     // Top-right (Kitchen)
+            {20, 295},     // Bottom-left (Entrance)
+            {320, 295},    // Bottom-center (additional room)
+            {620, 295},    // Bottom-right (additional room)
+        };
+        
+        for (int i = 0; i < rooms.size() && i < positions.length; i++) {
+            VBox roomTile = createRoomTile(rooms.get(i));
+            roomTile.setLayoutX(positions[i][0]);
+            roomTile.setLayoutY(positions[i][1]);
+            floorPlanContainer.getChildren().add(roomTile);
+        }
+        
+        // Add any additional rooms in a flow pattern
+        for (int i = positions.length; i < rooms.size(); i++) {
+            VBox roomTile = createRoomTile(rooms.get(i));
+            // Position additional rooms below the main structure
+            roomTile.setLayoutX(20 + ((i - positions.length) % 3) * 300);
+            roomTile.setLayoutY(570);
+            floorPlanContainer.getChildren().add(roomTile);
+        }
+    }
+    
+    private VBox createRoomTile(Room room) {
+        VBox tile = new VBox(8);
+        tile.getStyleClass().add("room-tile");
+        tile.setPrefWidth(260);
+        tile.setPrefHeight(240);
+        tile.setMaxWidth(260);
+        tile.setMaxHeight(240);
+        
+        // Room color indicator with more realistic styling
+        String roomColor = roomColors.getOrDefault(room, "#FFFFFF");
+        tile.setStyle("-fx-background-color: " + roomColor + "; " +
+                     "-fx-border-color: #654321; -fx-border-width: 3; " +
+                     "-fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 10; " +
+                     "-fx-effect: innershadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);");
+        
+        // Room header with floor texture
+        HBox header = new HBox(8);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setStyle("-fx-background-color: rgba(139, 115, 85, 0.3); " +
+                       "-fx-padding: 5; -fx-background-radius: 3;");
+        
+        Label roomIcon = new Label("🚪");
+        roomIcon.setStyle("-fx-font-size: 16px;");
+        
+        VBox roomInfo = new VBox(2);
+        Label roomName = new Label(room.getName());
+        roomName.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        
+        Label deviceCount = new Label(room.getDevices().size() + " devices");
+        deviceCount.setStyle("-fx-font-size: 10px; -fx-text-fill: #7f8c8d;");
+        
+        roomInfo.getChildren().addAll(roomName, deviceCount);
+        header.getChildren().addAll(roomIcon, roomInfo);
+        
+        // Devices grid - more compact
+        FlowPane devicesGrid = new FlowPane();
+        devicesGrid.setHgap(6);
+        devicesGrid.setVgap(6);
+        devicesGrid.setPrefWrapLength(240);
+        devicesGrid.setAlignment(Pos.CENTER);
+        
+        for (SmartDevice device : room.getDevices()) {
+            devicesGrid.getChildren().add(createDeviceIcon(device));
+        }
+        
+        // Add device button - smaller
+        Button addDeviceBtn = new Button("+ Device");
+        addDeviceBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; " +
+                             "-fx-font-size: 9px; -fx-padding: 3 8; -fx-background-radius: 3; " +
+                             "-fx-cursor: hand;");
+        addDeviceBtn.setOnAction(e -> showAddDeviceDialog(room));
+        
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+        
+        tile.getChildren().addAll(header, devicesGrid, spacer, addDeviceBtn);
+        
+        // Add tooltip
+        Tooltip tooltip = new Tooltip("Click devices to control them");
+        Tooltip.install(tile, tooltip);
+        
+        return tile;
+    }
+    
+    private VBox createDeviceIcon(SmartDevice device) {
+        VBox iconBox = new VBox(3);
+        iconBox.setAlignment(Pos.CENTER);
+        iconBox.setPrefWidth(55);
+        iconBox.setCursor(javafx.scene.Cursor.HAND);
+        
+        // Device icon - smaller
+        Label icon = new Label(getDeviceEmoji(device));
+        icon.setStyle("-fx-font-size: 20px; -fx-padding: 5; " +
+                     "-fx-background-radius: 50%; -fx-min-width: 35px; " +
+                     "-fx-min-height: 35px; -fx-alignment: center;");
+        
+        // Apply device-specific colors
+        String bgColor = getDeviceColor(device);
+        icon.setStyle(icon.getStyle() + "-fx-background-color: " + bgColor + ";");
+        
+        if (!device.isOn()) {
+            icon.setOpacity(0.4);
+        } else {
+            icon.setOpacity(1.0);
+        }
+        
+        // Device name - very compact
+        Label name = new Label(device.getName().length() > 10 ? 
+            device.getName().substring(0, 8) + ".." : device.getName());
+        name.setStyle("-fx-font-size: 8px; -fx-text-fill: #2c3e50;");
+        name.setWrapText(true);
+        name.setMaxWidth(50);
+        name.setAlignment(Pos.CENTER);
+        
+        iconBox.getChildren().addAll(icon, name);
+        
+        // Click to open control dialog
+        iconBox.setOnMouseClicked(e -> showDeviceControlDialog(device));
+        
+        // Tooltip
+        Tooltip tooltip = new Tooltip(device.getStatus());
+        Tooltip.install(iconBox, tooltip);
+        
+        return iconBox;
+    }
+    
+    private String getDeviceColor(SmartDevice device) {
+        if (device instanceof Light) return "#f39c12";
+        if (device instanceof Thermostat) return "#e74c3c";
+        if (device instanceof SmartTV) return "#8e44ad";
+        if (device instanceof SmartPlug) return "#9b59b6";
+        if (device instanceof SmartLock) return "#34495e";
+        if (device instanceof Camera) return "#16a085";
+        if (device instanceof MotionSensor) return "#27ae60";
+        if (device instanceof Speaker) return "#2980b9";
+        return "#95a5a6";
+    }
+    
+    private String getDeviceEmoji(SmartDevice device) {
+        if (device instanceof Light) return "💡";
+        if (device instanceof Thermostat) return "🌡️";
+        if (device instanceof SmartTV) return "📺";
+        if (device instanceof SmartPlug) return "🔌";
+        if (device instanceof SmartLock) return "🔒";
+        if (device instanceof Camera) return "📷";
+        if (device instanceof MotionSensor) return "👁️";
+        if (device instanceof Speaker) return "🔊";
+        return "📱";
+    }
+    
+    private String getDeviceClass(SmartDevice device) {
+        if (device instanceof Light) return "light";
+        if (device instanceof Thermostat) return "thermostat";
+        if (device instanceof SmartTV) return "tv";
+        if (device instanceof SmartPlug) return "plug";
+        if (device instanceof SmartLock) return "lock";
+        if (device instanceof Camera) return "camera";
+        if (device instanceof MotionSensor) return "sensor";
+        if (device instanceof Speaker) return "speaker";
+        return "device";
+    }
+    
+    private void showDeviceControlDialog(SmartDevice device) {
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setTitle("Control: " + device.getName());
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        content.getStyleClass().add("modal-dialog");
+        content.setAlignment(Pos.TOP_CENTER);
+        
+        Label title = new Label(getDeviceEmoji(device) + " " + device.getName());
+        title.getStyleClass().add("modal-title");
+        
+        Label status = new Label("Status: " + device.getStatus());
+        status.setStyle("-fx-font-size: 14px;");
+        
+        // Toggle button
+        Button toggleBtn = new Button(device.isOn() ? "Turn OFF" : "Turn ON");
+        toggleBtn.getStyleClass().add("toggle-button");
+        if (device.isOn()) toggleBtn.getStyleClass().add("on");
+        toggleBtn.setOnAction(e -> {
+            if (device.isOn()) {
+                device.turnOff();
+            } else {
+                device.turnOn();
+            }
+            status.setText("Status: " + device.getStatus());
+            toggleBtn.setText(device.isOn() ? "Turn OFF" : "Turn ON");
+            updateFloorPlan();
+            updateEnergyDashboard();
+        });
+        
+        content.getChildren().addAll(title, new Separator(), status, toggleBtn);
+        
+        // Device-specific controls
+        if (device instanceof Light) {
+            Light light = (Light) device;
+            Label brightnessLabel = new Label("Brightness");
+            brightnessLabel.getStyleClass().add("form-label");
+            
+            Slider brightnessSlider = new Slider(0, 100, 50);
+            brightnessSlider.setShowTickLabels(true);
+            brightnessSlider.setShowTickMarks(true);
+            brightnessSlider.setMajorTickUnit(25);
+            brightnessSlider.setBlockIncrement(10);
+            
+            Label brightnessValue = new Label("50%");
+            brightnessSlider.valueProperty().addListener((obs, old, newVal) -> {
+                light.setBrightness(newVal.intValue());
+                brightnessValue.setText(newVal.intValue() + "%");
+                updateEnergyDashboard();
+            });
+            
+            content.getChildren().addAll(new Separator(), brightnessLabel, brightnessSlider, brightnessValue);
+        }
+        
+        if (device instanceof Thermostat) {
+            Thermostat thermostat = (Thermostat) device;
+            Label tempLabel = new Label("Target Temperature");
+            tempLabel.getStyleClass().add("form-label");
+            
+            Slider tempSlider = new Slider(10, 35, 22);
+            tempSlider.setShowTickLabels(true);
+            tempSlider.setShowTickMarks(true);
+            tempSlider.setMajorTickUnit(5);
+            tempSlider.setBlockIncrement(1);
+            
+            Label tempValue = new Label("22°C");
+            tempSlider.valueProperty().addListener((obs, old, newVal) -> {
+                thermostat.setTargetTemperature(newVal.doubleValue());
+                tempValue.setText(String.format("%.1f°C", newVal.doubleValue()));
+                updateEnergyDashboard();
+            });
+            
+            content.getChildren().addAll(new Separator(), tempLabel, tempSlider, tempValue);
+        }
+        
+        if (device instanceof SmartTV) {
+            SmartTV tv = (SmartTV) device;
+            Label volumeLabel = new Label("Volume");
+            volumeLabel.getStyleClass().add("form-label");
+            
+            Slider volumeSlider = new Slider(0, 100, 50);
+            volumeSlider.setShowTickLabels(true);
+            volumeSlider.setShowTickMarks(true);
+            volumeSlider.setMajorTickUnit(25);
+            
+            Label volumeValue = new Label("50%");
+            volumeSlider.valueProperty().addListener((obs, old, newVal) -> {
+                tv.setVolume(newVal.intValue());
+                volumeValue.setText(newVal.intValue() + "%");
+            });
+            
+            content.getChildren().addAll(new Separator(), volumeLabel, volumeSlider, volumeValue);
+        }
+        
+        if (device instanceof Speaker) {
+            Speaker speaker = (Speaker) device;
+            
+            HBox playControls = new HBox(10);
+            playControls.setAlignment(Pos.CENTER);
+            
+            Button playBtn = new Button(speaker.isPlaying() ? "⏸ Pause" : "▶ Play");
+            playBtn.getStyleClass().add("control-button");
+            playBtn.setOnAction(e -> {
+                if (speaker.isPlaying()) {
+                    speaker.pause();
+                    playBtn.setText("▶ Play");
+                } else {
+                    speaker.play();
+                    playBtn.setText("⏸ Pause");
+                }
+                status.setText("Status: " + speaker.getStatus());
+                updateEnergyDashboard();
+            });
+            
+            playControls.getChildren().add(playBtn);
+            
+            Label volumeLabel = new Label("Volume");
+            volumeLabel.getStyleClass().add("form-label");
+            
+            Slider volumeSlider = new Slider(0, 100, 50);
+            volumeSlider.setShowTickLabels(true);
+            volumeSlider.setShowTickMarks(true);
+            volumeSlider.setMajorTickUnit(25);
+            
+            Label volumeValue = new Label("50%");
+            volumeSlider.valueProperty().addListener((obs, old, newVal) -> {
+                speaker.setVolume(newVal.intValue());
+                volumeValue.setText(newVal.intValue() + "%");
+                updateEnergyDashboard();
+            });
+            
+            content.getChildren().addAll(new Separator(), playControls, volumeLabel, volumeSlider, volumeValue);
+        }
+        
+        if (device instanceof SmartLock) {
+            SmartLock lock = (SmartLock) device;
+            
+            Button lockBtn = new Button(lock.isLocked() ? "🔓 Unlock" : "🔒 Lock");
+            lockBtn.getStyleClass().add("control-button");
+            lockBtn.setOnAction(e -> {
+                if (lock.isLocked()) {
+                    lock.unlock();
+                    lockBtn.setText("🔒 Lock");
+                } else {
+                    lock.lock();
+                    lockBtn.setText("🔓 Unlock");
+                }
+                status.setText("Status: " + lock.getStatus());
+                updateFloorPlan();
+            });
+            
+            content.getChildren().addAll(new Separator(), lockBtn);
+        }
+        
+        if (device instanceof Camera) {
+            Camera camera = (Camera) device;
+            
+            Button recordBtn = new Button(camera.isRecording() ? "⏹ Stop Recording" : "⏺ Start Recording");
+            recordBtn.getStyleClass().add("control-button");
+            recordBtn.setOnAction(e -> {
+                if (camera.isRecording()) {
+                    camera.stopRecording();
+                    recordBtn.setText("⏺ Start Recording");
+                } else {
+                    camera.startRecording();
+                    recordBtn.setText("⏹ Stop Recording");
+                }
+                status.setText("Status: " + camera.getStatus());
+            });
+            
+            content.getChildren().addAll(new Separator(), recordBtn);
+        }
+        
+        if (device instanceof MotionSensor) {
+            MotionSensor sensor = (MotionSensor) device;
+            
+            Button motionBtn = new Button("Simulate Motion");
+            motionBtn.getStyleClass().add("control-button");
+            motionBtn.setOnAction(e -> {
+                sensor.detectMotion();
+                status.setText("Status: " + sensor.getStatus());
+                updateFloorPlan();
+            });
+            
+            Button clearBtn = new Button("Clear Motion");
+            clearBtn.getStyleClass().add("control-button");
+            clearBtn.setOnAction(e -> {
+                sensor.clearMotion();
+                status.setText("Status: " + sensor.getStatus());
+                updateFloorPlan();
+            });
+            
+            HBox motionControls = new HBox(10);
+            motionControls.setAlignment(Pos.CENTER);
+            motionControls.getChildren().addAll(motionBtn, clearBtn);
+            
+            content.getChildren().addAll(new Separator(), motionControls);
+        }
+        
+        Button closeBtn = new Button("Close");
+        closeBtn.getStyleClass().add("control-button");
+        closeBtn.setOnAction(e -> dialog.close());
+        
+        content.getChildren().addAll(new Separator(), closeBtn);
+        
+        Scene scene = new Scene(content, 400, 500);
+        scene.getStylesheets().add(getClass().getResource("/floorplan.css").toExternalForm());
+        dialog.setScene(scene);
+        dialog.show();
+    }
+    
+    private void showAddRoomDialog() {
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setTitle("Add New Room");
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        content.getStyleClass().add("modal-dialog");
+        
+        Label title = new Label("Add New Room");
+        title.getStyleClass().add("modal-title");
+        
+        Label nameLabel = new Label("Room Name:");
+        nameLabel.getStyleClass().add("form-label");
+        
+        TextField nameField = new TextField();
+        nameField.setPromptText("e.g., Bathroom, Office, Garage");
+        nameField.getStyleClass().add("text-input");
+        
+        Label colorLabel = new Label("Room Color:");
+        colorLabel.getStyleClass().add("form-label");
+        
+        FlowPane colorPicker = new FlowPane();
+        colorPicker.setHgap(10);
+        colorPicker.setVgap(10);
+        
+        String[] colors = {"#FFE5B4", "#E6E6FA", "#F0FFF0", "#FFF8DC", "#FFE4E1", 
+                          "#E0FFFF", "#FFF0F5", "#F5F5DC", "#FAFAD2", "#FFE4B5"};
+        
+        final String[] selectedColor = {colors[0]};
+        
+        for (String color : colors) {
+            Rectangle colorBox = new Rectangle(40, 40);
+            colorBox.setFill(Color.web(color));
+            colorBox.setStroke(Color.web("#bdc3c7"));
+            colorBox.setStrokeWidth(2);
+            colorBox.setCursor(javafx.scene.Cursor.HAND);
+            
+            colorBox.setOnMouseClicked(e -> {
+                selectedColor[0] = color;
+                // Visual feedback
+                colorPicker.getChildren().forEach(node -> {
+                    if (node instanceof Rectangle) {
+                        ((Rectangle) node).setStrokeWidth(2);
+                        ((Rectangle) node).setStroke(Color.web("#bdc3c7"));
+                    }
+                });
+                colorBox.setStrokeWidth(4);
+                colorBox.setStroke(Color.web("#2c3e50"));
+            });
+            
+            colorPicker.getChildren().add(colorBox);
+        }
+        
+        // Set first color as selected
+        if (colorPicker.getChildren().size() > 0) {
+            Rectangle firstBox = (Rectangle) colorPicker.getChildren().get(0);
+            firstBox.setStrokeWidth(4);
+            firstBox.setStroke(Color.web("#2c3e50"));
+        }
+        
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER);
+        
+        Button addBtn = new Button("Add Room");
+        addBtn.getStyleClass().add("add-button");
+        addBtn.setOnAction(e -> {
+            String roomName = nameField.getText().trim();
+            if (!roomName.isEmpty()) {
+                Room newRoom = new Room(roomName);
+                home.addRoom(newRoom);
+                roomColors.put(newRoom, selectedColor[0]);
+                updateFloorPlan();
+                dialog.close();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Invalid Input");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter a room name.");
+                alert.showAndWait();
+            }
+        });
+        
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.getStyleClass().add("control-button");
+        cancelBtn.setOnAction(e -> dialog.close());
+        
+        buttons.getChildren().addAll(addBtn, cancelBtn);
+        
+        content.getChildren().addAll(title, new Separator(), nameLabel, nameField, 
+                                     colorLabel, colorPicker, new Separator(), buttons);
+        
+        Scene scene = new Scene(content, 450, 500);
+        scene.getStylesheets().add(getClass().getResource("/floorplan.css").toExternalForm());
+        dialog.setScene(scene);
+        dialog.show();
+    }
+    
+    private void showAddDeviceDialog(Room room) {
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setTitle("Add Device to " + room.getName());
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        content.getStyleClass().add("modal-dialog");
+        
+        Label title = new Label("Add Device to " + room.getName());
+        title.getStyleClass().add("modal-title");
+        
+        Label typeLabel = new Label("Device Type:");
+        typeLabel.getStyleClass().add("form-label");
+        
+        ComboBox<String> typeCombo = new ComboBox<>();
+        typeCombo.getItems().addAll("Light", "Thermostat", "Smart TV", "Smart Plug", 
+                                   "Smart Lock", "Camera", "Motion Sensor", "Speaker");
+        typeCombo.setValue("Light");
+        typeCombo.setPrefWidth(300);
+        
+        Label nameLabel = new Label("Device Name:");
+        nameLabel.getStyleClass().add("form-label");
+        
+        TextField nameField = new TextField();
+        nameField.setPromptText("e.g., Ceiling Light, Wall Socket");
+        nameField.getStyleClass().add("text-input");
+        
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER);
+        
+        Button addBtn = new Button("Add Device");
+        addBtn.getStyleClass().add("add-button");
+        addBtn.setOnAction(e -> {
+            String deviceName = nameField.getText().trim();
+            String deviceType = typeCombo.getValue();
+            
+            if (!deviceName.isEmpty()) {
+                String deviceId = room.getName().substring(0, 2).toUpperCase() + "-" + 
+                                System.currentTimeMillis() % 10000;
+                
+                SmartDevice newDevice = null;
+                
+                switch (deviceType) {
+                    case "Light":
+                        newDevice = new Light(deviceId, deviceName, 100);
+                        break;
+                    case "Thermostat":
+                        newDevice = new Thermostat(deviceId, deviceName, 22.0);
+                        break;
+                    case "Smart TV":
+                        newDevice = new SmartTV(deviceId, deviceName);
+                        break;
+                    case "Smart Plug":
+                        newDevice = new SmartPlug(deviceId, deviceName);
+                        break;
+                    case "Smart Lock":
+                        newDevice = new SmartLock(deviceId, deviceName);
+                        break;
+                    case "Camera":
+                        newDevice = new Camera(deviceId, deviceName);
+                        break;
+                    case "Motion Sensor":
+                        newDevice = new MotionSensor(deviceId, deviceName);
+                        break;
+                    case "Speaker":
+                        newDevice = new Speaker(deviceId, deviceName);
+                        break;
+                }
+                
+                if (newDevice != null) {
+                    room.addDevice(newDevice);
+                    updateFloorPlan();
+                    updateEnergyDashboard();
+                    dialog.close();
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Invalid Input");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter a device name.");
+                alert.showAndWait();
+            }
+        });
+        
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.getStyleClass().add("control-button");
+        cancelBtn.setOnAction(e -> dialog.close());
+        
+        buttons.getChildren().addAll(addBtn, cancelBtn);
+        
+        content.getChildren().addAll(title, new Separator(), typeLabel, typeCombo, 
+                                     nameLabel, nameField, new Separator(), buttons);
+        
+        Scene scene = new Scene(content, 400, 350);
+        scene.getStylesheets().add(getClass().getResource("/floorplan.css").toExternalForm());
+        dialog.setScene(scene);
+        dialog.show();
+    }
+    
+    private void updateEnergyDashboard() {
+        double totalEnergy = 0.0;
+        
+        for (SmartDevice device : home.getAllDevices()) {
+            if (device instanceof EnergyConsumer) {
+                totalEnergy += ((EnergyConsumer) device).getEnergyConsumption();
+            }
+        }
+        
+        totalEnergyLabel.setText(String.format("%.2f kWh", totalEnergy));
+        
+        // Update style based on consumption
+        totalEnergyLabel.getStyleClass().removeAll("energy-low", "energy-medium", "energy-high");
+        if (totalEnergy > 50) {
+            totalEnergyLabel.getStyleClass().add("energy-high");
+        } else if (totalEnergy > 25) {
+            totalEnergyLabel.getStyleClass().add("energy-medium");
+        } else {
+            totalEnergyLabel.getStyleClass().add("energy-low");
+        }
+    }
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\gui\SmartHomeGUI.java
+package com.smarthome.gui;
+
+import com.smarthome.controller.HomeController;
+import com.smarthome.model.*;
+import com.smarthome.automation.AutomationEngine;
+import com.smarthome.automation.Rule;
+import com.smarthome.interfaces.EnergyConsumer;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+
+public class SmartHomeGUI extends Application {
+    private Home home;
+    private HomeController controller;
+    private AutomationEngine automationEngine;
+    private VBox deviceListContainer;
+    private Label totalEnergyLabel;
+    
+    @Override
+    public void start(Stage primaryStage) {
+        initializeSmartHome();
+        
+        primaryStage.setTitle("Smart Home Automation System");
+        
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(10));
+        
+        // Top: Title and controls
+        root.setTop(createTopBar());
+        
+        // Left: Device list
+        root.setLeft(createDevicePanel());
+        
+        // Center: Energy dashboard
+        root.setCenter(createEnergyDashboard());
+        
+        // Right: Automation panel
+        root.setRight(createAutomationPanel());
+        
+        Scene scene = new Scene(root, 1200, 700);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+        updateDeviceList();
+        updateEnergyDashboard();
+    }
+    
+    private void initializeSmartHome() {
+        home = new Home("My Smart Home");
+        controller = new HomeController(home);
+        automationEngine = new AutomationEngine();
+        
+        // Create rooms and devices
+        Room livingRoom = new Room("Living Room");
+        Room bedroom = new Room("Bedroom");
+        Room kitchen = new Room("Kitchen");
+        
+        Light livingRoomLight = new Light("LR-L1", "Living Room Light", 100);
+        SmartTV tv = new SmartTV("LR-TV1", "Living Room TV");
+        MotionSensor sensor = new MotionSensor("LR-MS1", "Entry Sensor");
+        
+        Thermostat thermostat = new Thermostat("BR-TH1", "Bedroom Thermostat", 22.0);
+        Light bedroomLight = new Light("BR-L1", "Bedroom Light", 80);
+        
+        Light kitchenLight = new Light("KT-L1", "Kitchen Light", 100);
+        
+        livingRoom.addDevice(livingRoomLight);
+        livingRoom.addDevice(tv);
+        livingRoom.addDevice(sensor);
+        
+        bedroom.addDevice(thermostat);
+        bedroom.addDevice(bedroomLight);
+        
+        kitchen.addDevice(kitchenLight);
+        
+        home.addRoom(livingRoom);
+        home.addRoom(bedroom);
+        home.addRoom(kitchen);
+        
+        // Add automation rule
+        Rule motionRule = new Rule("Auto Light on Motion",
+            () -> sensor.isMotionDetected(),
+            () -> livingRoomLight.turnOn()
+        );
+        automationEngine.addRule(motionRule);
+    }
+    
+    private VBox createTopBar() {
+        VBox topBar = new VBox(10);
+        topBar.setPadding(new Insets(10));
+        
+        Label title = new Label("🏠 Smart Home Control Center");
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        
+        HBox controlButtons = new HBox(10);
+        Button allOnBtn = new Button("Turn All ON");
+        Button allOffBtn = new Button("Turn All OFF");
+        Button refreshBtn = new Button("Refresh");
+        
+        allOnBtn.setOnAction(e -> {
+            controller.turnOnAllDevices();
+            updateDeviceList();
+            updateEnergyDashboard();
+        });
+        
+        allOffBtn.setOnAction(e -> {
+            controller.turnOffAllDevices();
+            updateDeviceList();
+            updateEnergyDashboard();
+        });
+        
+        refreshBtn.setOnAction(e -> {
+            updateDeviceList();
+            updateEnergyDashboard();
+        });
+        
+        controlButtons.getChildren().addAll(allOnBtn, allOffBtn, refreshBtn);
+        topBar.getChildren().addAll(title, controlButtons);
+        
+        return topBar;
+    }
+    
+    private ScrollPane createDevicePanel() {
+        VBox panel = new VBox(10);
+        panel.setPadding(new Insets(10));
+        panel.setPrefWidth(350);
+        
+        Label header = new Label("Devices");
+        header.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        
+        deviceListContainer = new VBox(5);
+        
+        panel.getChildren().addAll(header, new Separator(), deviceListContainer);
+        
+        ScrollPane scrollPane = new ScrollPane(panel);
+        scrollPane.setFitToWidth(true);
+        return scrollPane;
+    }
+    
+    private VBox createEnergyDashboard() {
+        VBox dashboard = new VBox(15);
+        dashboard.setPadding(new Insets(10));
+        dashboard.setAlignment(Pos.TOP_CENTER);
+        
+        Label header = new Label("⚡ Energy Consumption Dashboard");
+        header.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        
+        totalEnergyLabel = new Label("Total: 0.00 kWh");
+        totalEnergyLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #2196F3;");
+        
+        dashboard.getChildren().addAll(header, new Separator(), totalEnergyLabel);
+        
+        return dashboard;
+    }
+    
+    private VBox createAutomationPanel() {
+        VBox panel = new VBox(10);
+        panel.setPadding(new Insets(10));
+        panel.setPrefWidth(250);
+        
+        Label header = new Label("Automation");
+        header.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        
+        Button evaluateBtn = new Button("Evaluate Rules");
+        evaluateBtn.setOnAction(e -> {
+            automationEngine.evaluateRules();
+            updateDeviceList();
+            updateEnergyDashboard();
+        });
+        
+        VBox rulesContainer = new VBox(5);
+        for (Rule rule : automationEngine.getRules()) {
+            Label ruleLabel = new Label("✓ " + rule.getName());
+            rulesContainer.getChildren().add(ruleLabel);
+        }
+        
+        panel.getChildren().addAll(header, new Separator(), evaluateBtn, rulesContainer);
+        
+        return panel;
+    }
+    
+    private void updateDeviceList() {
+        deviceListContainer.getChildren().clear();
+        
+        for (Room room : home.getRooms()) {
+            Label roomLabel = new Label("📍 " + room.getName());
+            roomLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+            deviceListContainer.getChildren().add(roomLabel);
+            
+            for (SmartDevice device : room.getDevices()) {
+                deviceListContainer.getChildren().add(createDeviceCard(device));
+            }
+            
+            deviceListContainer.getChildren().add(new Separator());
+        }
+    }
+    
+    private HBox createDeviceCard(SmartDevice device) {
+        HBox card = new HBox(10);
+        card.setPadding(new Insets(10));
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
+        
+        VBox info = new VBox(5);
+        Label nameLabel = new Label(device.getName());
+        nameLabel.setStyle("-fx-font-weight: bold;");
+        Label statusLabel = new Label(device.getStatus());
+        statusLabel.setTextFill(device.isOn() ? Color.GREEN : Color.GRAY);
+        info.getChildren().addAll(nameLabel, statusLabel);
+        
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        
+        Button toggleBtn = new Button(device.isOn() ? "OFF" : "ON");
+        toggleBtn.setOnAction(e -> {
+            if (device.isOn()) {
+                device.turnOff();
+            } else {
+                device.turnOn();
+            }
+            updateDeviceList();
+            updateEnergyDashboard();
+        });
+        
+        card.getChildren().addAll(info, spacer, toggleBtn);
+        
+        // Add specific controls
+        if (device instanceof Light) {
+            Light light = (Light) device;
+            Slider brightnessSlider = new Slider(0, 100, 50);
+            brightnessSlider.setShowTickLabels(false);
+            brightnessSlider.setPrefWidth(100);
+            brightnessSlider.valueProperty().addListener((obs, old, newVal) -> {
+                light.setBrightness(newVal.intValue());
+                updateEnergyDashboard();
+            });
+            card.getChildren().add(brightnessSlider);
+        }
+        
+        return card;
+    }
+    
+    private void updateEnergyDashboard() {
+        double totalEnergy = 0.0;
+        
+        for (SmartDevice device : home.getAllDevices()) {
+            if (device instanceof EnergyConsumer) {
+                totalEnergy += ((EnergyConsumer) device).getEnergyConsumption();
+            }
+        }
+        
+        totalEnergyLabel.setText(String.format("Total Energy: %.2f kWh", totalEnergy));
+        
+        // Update color based on consumption
+        if (totalEnergy > 50) {
+            totalEnergyLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #f44336;");
+        } else if (totalEnergy > 25) {
+            totalEnergyLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #ff9800;");
+        } else {
+            totalEnergyLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #4caf50;");
+        }
+    }
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\interfaces\Controllable.java
+package com.smarthome.interfaces;
+
+public interface Controllable {
+    void executeCommand(String command);
+    boolean isControllable();
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\interfaces\EnergyConsumer.java
+package com.smarthome.interfaces;
+
+public interface EnergyConsumer {
+    double getEnergyConsumption();
+    void setEnergyMode(String mode);
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\interfaces\Schedulable.java
+package com.smarthome.interfaces;
+
+import java.time.LocalTime;
+
+public interface Schedulable {
+    void scheduleTask(LocalTime time, Runnable task);
+    void cancelScheduledTasks();
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\AdhanService.java
+package com.smarthome.model;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+
+public class AdhanService {
+    private Map<String, LocalTime> prayerTimes;
+    private LocalTime simulatedCurrentTime;
+    private boolean timeAccelerationEnabled = false;
+    private int accelerationFactor = 1;
+    
+    public AdhanService(String city, String country) {
+        this.prayerTimes = new HashMap<>();
+        // Set demo prayer times
+        prayerTimes.put("Fajr", LocalTime.of(6, 0));
+        prayerTimes.put("Dhuhr", LocalTime.of(12, 0));  
+        prayerTimes.put("Asr", LocalTime.of(15, 30));
+        prayerTimes.put("Maghrib", LocalTime.of(18, 0));
+        prayerTimes.put("Isha", LocalTime.of(19, 30));
+        
+        this.simulatedCurrentTime = LocalTime.now();
+        System.out.println("✅ Simulation Adhan Service started for " + city + ", " + country);
+        System.out.println("🕐 Initial prayer times:");
+        prayerTimes.forEach((prayer, time) -> System.out.println("   " + prayer + ": " + time));
+    }
+    
+    public void setSimulatedTime(LocalTime time) {
+        this.simulatedCurrentTime = time;
+        System.out.println("🕐 Simulated time set to: " + time.format(DateTimeFormatter.ofPattern("HH:mm")));
+    }
+    
+    public void advanceTime(int minutes) {
+        this.simulatedCurrentTime = this.simulatedCurrentTime.plusMinutes(minutes);
+        System.out.println("⏩ Time advanced to: " + 
+            simulatedCurrentTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+    }
+    
+    public void enableTimeAcceleration(int factor) {
+        this.timeAccelerationEnabled = true;
+        this.accelerationFactor = factor;
+        System.out.println("🚀 Time acceleration enabled: " + factor + "x");
+    }
+    
+    public void updateTime() {
+        if (timeAccelerationEnabled) {
+            this.simulatedCurrentTime = this.simulatedCurrentTime.plusMinutes(accelerationFactor);
+        }
+        // Don't update to real time in simulation mode
+    }
+    
+    public boolean isAdhanTime() {
+        // Don't call updateTime() here - we want to check the exact time we set
+        System.out.println("   Checking Adhan at: " + simulatedCurrentTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+        
+        for (Map.Entry<String, LocalTime> entry : prayerTimes.entrySet()) {
+            LocalTime prayerTime = entry.getValue();
+            // Check if current simulated time is within 5 minutes of prayer time
+            if (simulatedCurrentTime.isAfter(prayerTime.minusSeconds(30)) && 
+                simulatedCurrentTime.isBefore(prayerTime.plusMinutes(5))) {
+                System.out.println("🕌 Adhan detected for " + entry.getKey() + " at " + prayerTime);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public String getNextPrayer() {
+        String nextPrayer = null;
+        LocalTime nextTime = null;
+        
+        for (Map.Entry<String, LocalTime> entry : prayerTimes.entrySet()) {
+            LocalTime prayerTime = entry.getValue();
+            if (prayerTime.isAfter(simulatedCurrentTime)) {
+                if (nextTime == null || prayerTime.isBefore(nextTime)) {
+                    nextTime = prayerTime;
+                    nextPrayer = entry.getKey();
+                }
+            }
+        }
+        
+        return nextPrayer != null ? 
+            nextPrayer + " at " + nextTime.format(DateTimeFormatter.ofPattern("HH:mm")) : 
+            "All prayers completed for today";
+    }
+    
+    public String getCurrentSimulatedTime() {
+        return simulatedCurrentTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+    
+    public Map<String, LocalTime> getPrayerTimes() {
+        return new HashMap<>(prayerTimes);
+    }
+    
+    // For GUI integration
+    public void fastForwardToNextPrayer() {
+        String nextPrayer = getNextPrayer();
+        if (!nextPrayer.contains("completed")) {
+            String[] parts = nextPrayer.split(" at ");
+            LocalTime nextTime = LocalTime.parse(parts[1]);
+            setSimulatedTime(nextTime.minusMinutes(1)); // Set to 1 minute before Adhan
+            System.out.println("⏭️ Fast-forwarded to 1 minute before " + parts[0]);
+        }
+    }
+    
+    public void setPrayerTime(String prayer, LocalTime time) {
+        prayerTimes.put(prayer, time);
+        System.out.println("✅ Set " + prayer + " to " + time);
+    }
+    
+    // Debug method to see what's happening
+    public void debugPrayerTimes() {
+        System.out.println("🔍 DEBUG - Current time: " + getCurrentSimulatedTime());
+        prayerTimes.forEach((prayer, time) -> {
+            boolean isActive = simulatedCurrentTime.isAfter(time.minusSeconds(30)) && 
+                              simulatedCurrentTime.isBefore(time.plusMinutes(5));
+            System.out.println("   " + prayer + " at " + time + " - " + (isActive ? "ACTIVE" : "inactive"));
+        });
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\CalendarService.java
+package com.smarthome.model;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
+/**
+ * Service to handle calendar integration
+ * Currently uses mock data, but ready for real Google Calendar API
+ */
+public class CalendarService {
+    private String userEmail;
+    private Random random;
+    
+    public CalendarService(String userEmail) {
+        this.userEmail = userEmail;
+        this.random = new Random();
+        System.out.println("📅 Calendar Service initialized for: " + userEmail);
+    }
+    
+    /**
+     * Get today's events from calendar
+     * Currently returns mock data, but structure is ready for real API
+     */
+    public List<String> getTodaysEvents() {
+        System.out.println("📅 Fetching calendar events for: " + userEmail);
+        
+        // Multiple sets of mock data to make it feel more realistic
+        List<List<String>> mockEventSets = Arrays.asList(
+            // Professional day
+            Arrays.asList(
+                "Team Standup Meeting - 9:30 AM",
+                "Lunch with Client - 12:30 PM",
+                "Project Review - 3:00 PM",
+                "Gym Session - 6:00 PM",
+                "Family Dinner - 7:30 PM"
+            ),
+            // Busy day
+            Arrays.asList(
+                "Doctor Appointment - 10:00 AM",
+                "Budget Meeting - 11:30 AM",
+                "Lunch with Team - 1:00 PM",
+                "Client Call - 4:00 PM",
+                "Yoga Class - 6:30 PM"
+            ),
+            // Light day
+            Arrays.asList(
+                "Dentist Appointment - 11:00 AM",
+                "Grocery Shopping - 5:00 PM",
+                "Movie Night - 8:00 PM"
+            ),
+            // Weekend
+            Arrays.asList(
+                "Brunch with Friends - 11:00 AM",
+                "Shopping Mall - 2:00 PM",
+                "Family BBQ - 6:00 PM"
+            )
+        );
+        
+        // Pick a random set of events
+        List<String> mockEvents = mockEventSets.get(random.nextInt(mockEventSets.size()));
+        
+        System.out.println("✅ Found " + mockEvents.size() + " events for today");
+        return mockEvents;
+    }
+    
+    /**
+     * Get today's reminders/tasks
+     */
+    public List<String> getTodaysReminders() {
+        System.out.println("🔔 Fetching reminders for: " + userEmail);
+        
+        // Multiple sets of mock reminders
+        List<List<String>> mockReminderSets = Arrays.asList(
+            Arrays.asList(
+                "Pick up groceries after work",
+                "Call insurance company",
+                "Pay electricity bill",
+                "Prepare presentation slides",
+                "Book flight tickets"
+            ),
+            Arrays.asList(
+                "Send project report to manager",
+                "Buy birthday gift for Sarah",
+                "Clean the garage",
+                "Schedule car maintenance",
+                "Renew gym membership"
+            ),
+            Arrays.asList(
+                "Water the plants",
+                "Return library books",
+                "Plan weekend trip",
+                "Organize desk",
+                "Backup computer files"
+            )
+        );
+        
+        // Pick a random set of reminders
+        List<String> mockReminders = mockReminderSets.get(random.nextInt(mockReminderSets.size()));
+        
+        System.out.println("✅ Found " + mockReminders.size() + " reminders for today");
+        return mockReminders;
+    }
+    
+    /**
+     * Check if user has any upcoming events in the next hour
+     */
+    public String getNextUpcomingEvent() {
+        String[] upcomingEvents = {
+            "Team Standup Meeting at 9:30 AM",
+            "Doctor Appointment at 11:00 AM", 
+            "Lunch Meeting at 1:00 PM",
+            "Project Deadline at 3:00 PM",
+            "Gym Session at 6:00 PM"
+        };
+        
+        String nextEvent = upcomingEvents[random.nextInt(upcomingEvents.length)];
+        System.out.println("⏰ Next upcoming event: " + nextEvent);
+        return nextEvent;
+    }
+    
+    /**
+     * Get calendar service status
+     */
+    public String getServiceStatus() {
+        return "📅 Calendar Service Active (Mock Mode) - Connected to: " + userEmail;
+    }
+    
+    /**
+     * Simulate adding a new event (for future API integration)
+     */
+    public boolean addEvent(String eventTitle, String time) {
+        System.out.println("➕ Event added to calendar: " + eventTitle + " at " + time);
+        return true;
+    }
+    
+    /**
+     * Simulate adding a new reminder (for future API integration)
+     */
+    public boolean addReminder(String reminder) {
+        System.out.println("➕ Reminder added: " + reminder);
+        return true;
+    }
+    
+    /**
+     * Get service info
+     */
+    public String getServiceInfo() {
+        return String.format(
+            "Calendar Service Info:\n" +
+            "• User: %s\n" +
+            "• Mode: Mock Data (Ready for Google Calendar API)\n" +
+            "• Features: Events, Reminders, Upcoming Events",
+            userEmail
+        );
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\Camera.java
+package com.smarthome.model;
+
+import com.smarthome.interfaces.Controllable;
+
+public class Camera extends SmartDevice implements Controllable {
+    private boolean recording;
+    private String resolution;
+    
+    public Camera(String deviceId, String name) {
+        super(deviceId, name);
+        this.recording = false;
+        this.resolution = "1080p";
+    }
+    
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        System.out.println(name + " turned ON");
+    }
+    
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        this.recording = false;
+        System.out.println(name + " turned OFF");
+    }
+    
+    @Override
+    public String getStatus() {
+        if (!isOn) return "OFF";
+        return recording ? "RECORDING (" + resolution + ")" : "STANDBY (" + resolution + ")";
+    }
+    
+    public void startRecording() {
+        if (isOn) {
+            this.recording = true;
+            System.out.println(name + " started recording");
+        }
+    }
+    
+    public void stopRecording() {
+        this.recording = false;
+        System.out.println(name + " stopped recording");
+    }
+    
+    public boolean isRecording() {
+        return recording;
+    }
+    
+    @Override
+    public void executeCommand(String command) {
+        if (command.equalsIgnoreCase("ON")) {
+            turnOn();
+        } else if (command.equalsIgnoreCase("OFF")) {
+            turnOff();
+        } else if (command.equalsIgnoreCase("RECORD")) {
+            startRecording();
+        } else if (command.equalsIgnoreCase("STOP")) {
+            stopRecording();
+        }
+    }
+    
+    @Override
+    public boolean isControllable() {
+        return true;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\Home.java
+package com.smarthome.model;
+
+import com.smarthome.exceptions.DeviceNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Home {
+    private String name;
+    private List<Room> rooms;
+    
+    public Home(String name) {
+        this.name = name;
+        this.rooms = new ArrayList<>();
+    }
+    
+    public void addRoom(Room room) {
+        rooms.add(room);
+        System.out.println("Room " + room.getName() + " added to home");
+    }
+    
+    public void removeRoom(String roomName) {
+        rooms.removeIf(r -> r.getName().equals(roomName));
+    }
+    
+    public SmartDevice findDeviceById(String deviceId) throws DeviceNotFoundException {
+        for (Room room : rooms) {
+            SmartDevice device = room.findDeviceById(deviceId);
+            if (device != null) {
+                return device;
+            }
+        }
+        throw new DeviceNotFoundException("Device with ID " + deviceId + " not found in home");
+    }
+    
+    public List<SmartDevice> getAllDevices() {
+        List<SmartDevice> allDevices = new ArrayList<>();
+        for (Room room : rooms) {
+            allDevices.addAll(room.getDevices());
+        }
+        return allDevices;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public List<Room> getRooms() {
+        return new ArrayList<>(rooms);
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\IslamicCalendarService.java
+package com.smarthome.model;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
+import org.json.JSONObject;
+
+public class IslamicCalendarService {
+    private static final String API_BASE = "https://api.aladhan.com/v1/gToH";
+    
+    public static IslamicDate getTodayIslamicDate() {
+        try {
+            // Get today's date for the API call
+            LocalDate today = LocalDate.now();
+            String dateParam = today.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            String urlString = API_BASE + "?date=" + dateParam;
+            
+            System.out.println("🕌 Fetching Islamic date from API: " + urlString);
+            
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(10000);
+            
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println("❌ API returned HTTP " + responseCode);
+                return getFallbackDate();
+            }
+            
+            Scanner scanner = new Scanner(conn.getInputStream());
+            StringBuilder response = new StringBuilder();
+            while (scanner.hasNext()) {
+                response.append(scanner.nextLine());
+            }
+            scanner.close();
+            
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONObject data = jsonResponse.getJSONObject("data");
+            JSONObject hijri = data.getJSONObject("hijri");
+            
+            String day = hijri.getString("day");
+            String monthEn = hijri.getJSONObject("month").getString("en"); // Use English instead of Arabic
+            String year = hijri.getString("year");
+            
+            String event = getIslamicEvent(monthEn, day);
+            
+            String formattedDate = day + " " + monthEn + " " + year;
+            System.out.println("✅ Islamic date fetched: " + formattedDate);
+            
+            return new IslamicDate(formattedDate, event);
+            
+        } catch (IOException e) {
+            System.err.println("❌ Failed to fetch Islamic date from API: " + e.getMessage());
+            return getFallbackDate();
+        }
+    }
+    
+    private static IslamicDate getFallbackDate() {
+        // Fallback with English text instead of Arabic
+        LocalDate today = LocalDate.now();
+        // Simple fallback calculation (approximate)
+        String fallbackDate = "15 Ramadan 1445";
+        String fallbackEvent = getIslamicEvent("Ramadan", "15");
+        
+        System.out.println("🔄 Using fallback Islamic date: " + fallbackDate);
+        return new IslamicDate(fallbackDate, fallbackEvent);
+    }
+    
+    private static String getIslamicEvent(String month, String day) {
+        String monthDayKey = getMonthNumber(month) + "-" + day;
+        
+        switch (monthDayKey) {
+            case "10-1": return "Eid al-Fitr";
+            case "12-10": return "Eid al-Adha";
+            case "1-1": return "Islamic New Year";
+            case "9-1": return "Ramadan Begins";
+            case "9-27": return "Laylat al-Qadr";
+            case "3-12": return "Mawlid al-Nabi";
+            case "7-27": return "Isra and Mi'raj";
+            default: return null;
+        }
+    }
+    
+    private static String getMonthNumber(String monthEn) {
+        switch (monthEn.toLowerCase()) {
+            case "muharram": return "1";
+            case "safar": return "2";
+            case "rabi al-awwal": return "3";
+            case "rabi al-thani": return "4";
+            case "jumada al-awwal": return "5";
+            case "jumada al-thani": return "6";
+            case "rajab": return "7";
+            case "sha'ban": return "8";
+            case "ramadan": return "9";
+            case "shawwal": return "10";
+            case "dhu al-qidah": return "11";
+            case "dhu al-hijjah": return "12";
+            default: return "0";
+        }
+    }
+    
+    public static class IslamicDate {
+        public String date;
+        public String event;
+        
+        public IslamicDate(String date, String event) {
+            this.date = date;
+            this.event = event;
+        }
+        
+        @Override
+        public String toString() {
+            return event != null ? date + " - " + event : date;
+        }
+    }
+    
+    // Test method
+    public static void main(String[] args) {
+        IslamicDate today = getTodayIslamicDate();
+        System.out.println("📅 Today's Islamic Date: " + today.date);
+        if (today.event != null) {
+            System.out.println("🎉 Event: " + today.event);
+        }
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\Light.java
+package com.smarthome.model;
+
+import com.smarthome.interfaces.Controllable;
+import com.smarthome.interfaces.EnergyConsumer;
+
+public class Light extends SmartDevice implements Controllable, EnergyConsumer {
+    private int brightness;
+    private String energyMode;
+    
+    public Light(String deviceId, String name, int brightness) {
+        super(deviceId, name);
+        this.brightness = brightness;
+        this.energyMode = "NORMAL";
+    }
+    
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        System.out.println(name + " turned ON");
+    }
+    
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        System.out.println(name + " turned OFF");
+    }
+    
+    @Override
+    public String getStatus() {
+        return isOn ? "ON (Brightness: " + brightness + "%)" : "OFF";
+    }
+    
+    public void setBrightness(int brightness) {
+        if (brightness < 0 || brightness > 100) {
+            throw new IllegalArgumentException("Brightness must be between 0 and 100");
+        }
+        this.brightness = brightness;
+        System.out.println(name + " brightness set to " + brightness + "%");
+    }
+    
+    @Override
+    public void executeCommand(String command) {
+        if (command.equalsIgnoreCase("ON")) {
+            turnOn();
+        } else if (command.equalsIgnoreCase("OFF")) {
+            turnOff();
+        }
+    }
+    
+    @Override
+    public boolean isControllable() {
+        return true;
+    }
+    
+    @Override
+    public double getEnergyConsumption() {
+        return isOn ? (brightness * 0.1) : 0.0;
+    }
+    
+    @Override
+    public void setEnergyMode(String mode) {
+        this.energyMode = mode;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\MotionSensor.java
+package com.smarthome.model;
+
+public class MotionSensor extends SmartDevice {
+    private boolean motionDetected;
+    
+    public MotionSensor(String deviceId, String name) {
+        super(deviceId, name);
+        this.motionDetected = false;
+        this.isOn = true; // Sensors are always on
+    }
+    
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        System.out.println(name + " activated");
+    }
+    
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        System.out.println(name + " deactivated");
+    }
+    
+    @Override
+    public String getStatus() {
+        return isOn ? (motionDetected ? "ACTIVE - Motion Detected" : "ACTIVE - No Motion") : "INACTIVE";
+    }
+    
+    public void detectMotion() {
+        this.motionDetected = true;
+        System.out.println(name + " detected motion!");
+    }
+    
+    public void clearMotion() {
+        this.motionDetected = false;
+    }
+    
+    public boolean isMotionDetected() {
+        return motionDetected;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\QiblaService.java
+package com.smarthome.model;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+import org.json.JSONObject;
+
+public class QiblaService {
+    private static final String API_URL = "http://api.aladhan.com/v1/qibla/";
+    
+    public static QiblaDirection getQiblaDirection(double latitude, double longitude) {
+        try {
+            String urlString = API_URL + latitude + "/" + longitude;
+            System.out.println("🕋 Fetching Qibla direction from: " + urlString);
+            
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(10000);
+            
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println("❌ Qibla API returned HTTP " + responseCode);
+                return getFallbackDirection(latitude, longitude);
+            }
+            
+            Scanner scanner = new Scanner(conn.getInputStream());
+            StringBuilder response = new StringBuilder();
+            while (scanner.hasNext()) {
+                response.append(scanner.nextLine());
+            }
+            scanner.close();
+            
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONObject data = jsonResponse.getJSONObject("data");
+            
+            double direction = data.getDouble("direction");
+            String compassDirection = getCompassDirection(direction);
+            
+            System.out.println("✅ Qibla direction found: " + compassDirection + " (" + direction + "°)");
+            return new QiblaDirection(direction, compassDirection);
+            
+        } catch (IOException e) {
+            System.err.println("❌ Failed to fetch Qibla direction from API: " + e.getMessage());
+            return getFallbackDirection(latitude, longitude);
+        }
+    }
+    
+    private static QiblaDirection getFallbackDirection(double latitude, double longitude) {
+        System.out.println("🔄 Using fallback Qibla calculation for coordinates: " + 
+                          latitude + ", " + longitude);
+        // Simple fallback: approximate direction for demo
+        double fallbackDegrees = calculateApproximateQibla(latitude, longitude);
+        String compassDirection = getCompassDirection(fallbackDegrees);
+        return new QiblaDirection(fallbackDegrees, compassDirection);
+    }
+    
+    private static double calculateApproximateQibla(double latitude, double longitude) {
+        // Very approximate calculation for demo purposes
+        // In real implementation, use proper spherical trigonometry
+        if (latitude > 40) return 120.0; // Northern regions
+        if (latitude < 10) return 65.0;  // Southern regions
+        return 135.0; // Default for mid-latitudes
+    }
+    
+    private static String getCompassDirection(double degrees) {
+        if (degrees >= 337.5 || degrees < 22.5) return "North";
+        if (degrees >= 22.5 && degrees < 67.5) return "Northeast";
+        if (degrees >= 67.5 && degrees < 112.5) return "East";
+        if (degrees >= 112.5 && degrees < 157.5) return "Southeast";
+        if (degrees >= 157.5 && degrees < 202.5) return "South";
+        if (degrees >= 202.5 && degrees < 247.5) return "Southwest";
+        if (degrees >= 247.5 && degrees < 292.5) return "West";
+        if (degrees >= 292.5 && degrees < 337.5) return "Northwest";
+        return "Unknown";
+    }
+    
+    public static class QiblaDirection {
+        public double degrees;
+        public String direction;
+        
+        public QiblaDirection(double degrees, String direction) {
+            this.degrees = degrees;
+            this.direction = direction;
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("%s (%.1f°)", direction, degrees);
+        }
+        
+        // Additional helpful methods
+        public String toDisplayString() {
+            return "🕋 Qibla Direction: " + toString();
+        }
+        
+        public boolean isValid() {
+            return degrees >= 0 && degrees <= 360 && !"Unknown".equals(direction);
+        }
+    }
+    
+    // Test method
+    public static void main(String[] args) {
+        // Test with Tunis coordinates
+        QiblaDirection direction = getQiblaDirection(36.8065, 10.1815);
+        System.out.println("📍 Test Qibla for Tunis: " + direction.toDisplayString());
+        System.out.println("✅ Valid direction: " + direction.isValid());
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\QuranAPIService.java
+package com.smarthome.model;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class QuranAPIService {
+    private static final String API_URL = "https://api.alquran.cloud/v1/";
+    
+    public static QuranVerse getRandomVerse() {
+        try {
+            // Get a random verse between 1 and 6236 (total Quran verses)
+            int randomVerseId = (int) (Math.random() * 6236) + 1;
+            String urlString = API_URL + "ayah/" + randomVerseId;
+            
+            System.out.println("📡 Fetching Quran verse from API: " + urlString);
+            
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
+            
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                throw new IOException("HTTP error code: " + responseCode);
+            }
+            
+            Scanner scanner = new Scanner(conn.getInputStream());
+            StringBuilder response = new StringBuilder();
+            while (scanner.hasNext()) {
+                response.append(scanner.nextLine());
+            }
+            scanner.close();
+            
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            
+            // Check if API returned success
+            if (!jsonResponse.getString("status").equals("OK")) {
+                throw new IOException("API returned error: " + jsonResponse.getString("status"));
+            }
+            
+            JSONObject data = jsonResponse.getJSONObject("data");
+            
+            // Get Arabic text
+            String arabicText = data.getString("text");
+            
+            // Get surah info
+            JSONObject surah = data.getJSONObject("surah");
+            String surahName = surah.getString("englishName");
+            int verseNumber = data.getInt("numberInSurah");
+            
+            // Get translation (from a different API call)
+            String translation = getTranslation(randomVerseId);
+            
+            return new QuranVerse(arabicText, translation, surahName + " (" + verseNumber + ")");
+            
+        } catch (IOException e) {
+            System.err.println("❌ Failed to fetch Quran verse from API: " + e.getMessage());
+            throw new RuntimeException("Quran API unavailable - please check internet connection");
+        }
+    }
+    
+    private static String getTranslation(int verseId) {
+        try {
+            String urlString = API_URL + "ayah/" + verseId + "/en.asad";
+            
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(5000);
+            
+            Scanner scanner = new Scanner(conn.getInputStream());
+            StringBuilder response = new StringBuilder();
+            while (scanner.hasNext()) {
+                response.append(scanner.nextLine());
+            }
+            scanner.close();
+            
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONObject data = jsonResponse.getJSONObject("data");
+            return data.getString("text");
+            
+        } catch (Exception e) {
+            // If translation fails, return a generic message
+            return "Translation unavailable";
+        }
+    }
+    
+    public static class QuranVerse {
+        public String arabic;
+        public String translation;
+        public String surahInfo;
+        
+        public QuranVerse(String arabic, String translation, String surahInfo) {
+            this.arabic = arabic;
+            this.translation = translation;
+            this.surahInfo = surahInfo;
+        }
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\Room.java
+package com.smarthome.model;
+
+import com.smarthome.exceptions.DeviceNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Room {
+    private String name;
+    private List<SmartDevice> devices;
+    
+    public Room(String name) {
+        this.name = name;
+        this.devices = new ArrayList<>();
+    }
+    
+    public void addDevice(SmartDevice device) {
+        devices.add(device);
+        System.out.println("Device " + device.getName() + " added to " + name);
+    }
+    
+    public void removeDevice(String deviceId) throws DeviceNotFoundException {
+        SmartDevice device = findDeviceById(deviceId);
+        if (device != null) {
+            devices.remove(device);
+            System.out.println("Device " + device.getName() + " removed from " + name);
+        } else {
+            throw new DeviceNotFoundException("Device with ID " + deviceId + " not found in " + name);
+        }
+    }
+    
+    public SmartDevice findDeviceById(String deviceId) {
+        return devices.stream()
+            .filter(d -> d.getDeviceId().equals(deviceId))
+            .findFirst()
+            .orElse(null);
+    }
+    
+    public List<SmartDevice> findDevicesByType(Class<? extends SmartDevice> type) {
+        List<SmartDevice> result = new ArrayList<>();
+        for (SmartDevice device : devices) {
+            if (type.isInstance(device)) {
+                result.add(device);
+            }
+        }
+        return result;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public List<SmartDevice> getDevices() {
+        return new ArrayList<>(devices);
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\SmartDevice.java
+package com.smarthome.model;
+
+public abstract class SmartDevice {
+    protected String deviceId;
+    protected String name;
+    protected boolean isOn;
+    
+    public SmartDevice(String deviceId, String name) {
+        this.deviceId = deviceId;
+        this.name = name;
+        this.isOn = false;
+    }
+    
+    public abstract void turnOn();
+    public abstract void turnOff();
+    public abstract String getStatus();
+    
+    public String getDeviceId() {
+        return deviceId;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public boolean isOn() {
+        return isOn;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("[%s] %s - %s", deviceId, name, getStatus());
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\SmartLock.java
+package com.smarthome.model;
+
+import com.smarthome.interfaces.Controllable;
+
+public class SmartLock extends SmartDevice implements Controllable {
+    private boolean locked;
+
+    public SmartLock(String deviceId, String name) {
+        super(deviceId, name);
+        this.locked = true;
+        this.isOn = true;
+    }
+
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        System.out.println(name + " activated");
+    }
+
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        System.out.println(name + " deactivated");
+    }
+
+    @Override
+    public String getStatus() {
+        return isOn ? (locked ? "LOCKED" : "UNLOCKED") : "INACTIVE";
+    }
+
+    public void lock() {
+        this.locked = true;
+        System.out.println(name + " locked");
+    }
+
+    public void unlock() {
+        this.locked = false;
+        System.out.println(name + " unlocked");
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    @Override
+    public void executeCommand(String command) {
+        if (command.equalsIgnoreCase("LOCK")) {
+            lock();
+        } else if (command.equalsIgnoreCase("UNLOCK")) {
+            unlock();
+        }
+    }
+
+    @Override
+    public boolean isControllable() {
+        return true;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\SmartMirror.java
+package com.smarthome.model;
+
+import com.smarthome.interfaces.Controllable;
+import com.smarthome.interfaces.EnergyConsumer;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class SmartMirror extends SmartDevice implements Controllable, EnergyConsumer {
+    private boolean isMirrorMode;
+    private String currentArabicVerse;
+    private String currentTranslation;
+    private String currentSurahInfo;
+    private List<String> reminders;
+    private List<String> calendarEvents;
+    private String weather;
+    private double temperature;
+    private final String qiblaDirection;
+    private final String city;
+    
+    // Calendar Service Integration
+    private CalendarService calendarService;
+    
+    // YOUR HOUSE COORDINATES - UPDATE THESE:
+    private static final double YOUR_LATITUDE = 36.8065;  // Tunis latitude
+    private static final double YOUR_LONGITUDE = 10.1815; // Tunis longitude
+    private static final String YOUR_CITY = "Tunis";
+    
+    public SmartMirror(String deviceId, String name) {
+        super(deviceId, name);
+        this.isMirrorMode = true;
+        this.reminders = new ArrayList<>();
+        this.calendarEvents = new ArrayList<>();
+        this.weather = "Sunny";
+        this.temperature = 22.0;
+        this.city = YOUR_CITY;
+        
+        // Initialize Calendar Service
+        this.calendarService = new CalendarService("user@example.com"); // Default email
+        
+        // Get real Qibla direction for your house
+        QiblaService.QiblaDirection qibla = QiblaService.getQiblaDirection(YOUR_LATITUDE, YOUR_LONGITUDE);
+        this.qiblaDirection = String.format("🕋 Qibla Direction: %s (%.1f°)", qibla.direction, qibla.degrees);
+        
+        System.out.println("🏠 Smart Mirror configured for: " + YOUR_CITY);
+        System.out.println("📍 Coordinates: " + YOUR_LATITUDE + ", " + YOUR_LONGITUDE);
+        System.out.println("🕋 " + qiblaDirection);
+        
+        updateDailyVerse();
+        startAutoRefresh();
+    }
+    
+    private void startAutoRefresh() {
+        Thread refreshThread = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(3600000); // Refresh every hour
+                    updateDailyVerse();
+                    System.out.println("🔄 Quran verse auto-refreshed (hourly update)");
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        });
+        refreshThread.setDaemon(true);
+        refreshThread.start();
+    }
+    
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        System.out.println("🪞 Smart Mirror " + getName() + " turned ON");
+    }
+    
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        System.out.println("🪞 Smart Mirror " + getName() + " turned OFF");
+    }
+    
+    @Override
+    public String getStatus() {
+        return isOn ? 
+            String.format("ON (%s - %s, %.1f°C)", 
+                isMirrorMode ? "Mirror Mode" : "Display Mode", weather, temperature) : 
+            "OFF";
+    }
+    
+    public void toggleMode() {
+        this.isMirrorMode = !this.isMirrorMode;
+        System.out.println("🪞 Smart Mirror switched to " + 
+            (isMirrorMode ? "Mirror Mode" : "Information Display Mode"));
+    }
+    
+    public void displayBriefing() {
+        if (!isOn || isMirrorMode) return;
+        
+        // Get real Islamic date from API
+        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getTodayIslamicDate();
+        
+        System.out.println("\n" + "═".repeat(50));
+        System.out.println("🪞 SMART MIRROR - COMPREHENSIVE BRIEFING");
+        System.out.println("═".repeat(50));
+        
+        // Clean organized output
+        System.out.println("🕐 Time: " + getCurrentTime());
+        System.out.println("🌤️  Weather: " + weather + " | " + temperature + "°C");
+        System.out.println(qiblaDirection);
+        System.out.println("📅 Islamic Date: " + islamicDate.date);
+        
+        if (islamicDate.event != null) {
+            System.out.println("🎉 " + islamicDate.event);
+        }
+        
+        System.out.println("\n📖 Quran Verse of the Hour:");
+        System.out.println("   " + currentArabicVerse);
+        System.out.println("   " + currentTranslation);
+        System.out.println("   " + currentSurahInfo);
+        
+        // AUTO-SYNC CALENDAR EVENTS (NEW FEATURE)
+        syncCalendarEvents();
+        if (!calendarEvents.isEmpty()) {
+            System.out.println("\n📅 Today's Events:");
+            for (String event : calendarEvents) {
+                System.out.println("   • " + event);
+            }
+        } else {
+            System.out.println("\n📅 No events scheduled for today");
+        }
+        
+        // AUTO-SYNC REMINDERS (NEW FEATURE)
+        syncReminders();
+        if (!reminders.isEmpty()) {
+            System.out.println("\n🔔 Reminders:");
+            for (String reminder : reminders) {
+                System.out.println("   • " + reminder);
+            }
+        } else {
+            System.out.println("\n🔔 No reminders for today");
+        }
+        
+        System.out.println("═".repeat(50));
+    }
+    
+    public void displayIslamicCalendar() {
+        if (!isOn || isMirrorMode) return;
+        
+        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getTodayIslamicDate();
+        
+        System.out.println("\n" + "☆".repeat(40));
+        System.out.println("🕌 ISLAMIC CALENDAR");
+        System.out.println("☆".repeat(40));
+        System.out.println("📅 " + islamicDate.date);
+        
+        if (islamicDate.event != null) {
+            System.out.println("🎉 " + islamicDate.event);
+        } else {
+            System.out.println("📅 No Islamic events today");
+        }
+        
+        System.out.println(qiblaDirection);
+        System.out.println("🏙️  City: " + city);
+        System.out.println("☆".repeat(40));
+    }
+    
+    public void displayQuranVerseOnly() {
+        if (!isOn || isMirrorMode) return;
+        System.out.println("📖 " + currentArabicVerse + "   " + currentTranslation + "   " + currentSurahInfo);
+    }
+    
+    private String getCurrentTime() {
+        return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+    
+    private void updateDailyVerse() {
+        try {
+            QuranAPIService.QuranVerse verse = QuranAPIService.getRandomVerse();
+            this.currentArabicVerse = verse.arabic;
+            this.currentTranslation = verse.translation;
+            this.currentSurahInfo = verse.surahInfo;
+        } catch (Exception e) {
+            System.err.println("❌ Error fetching Quran verse: " + e.getMessage());
+        }
+    }
+    
+    // NEW: Calendar Integration Methods
+    public void syncCalendarEvents() {
+        if (calendarService != null) {
+            List<String> events = calendarService.getTodaysEvents();
+            this.calendarEvents.clear();
+            this.calendarEvents.addAll(events);
+            System.out.println("📅 Calendar synced: " + events.size() + " events loaded");
+        }
+    }
+    
+    public void syncReminders() {
+        if (calendarService != null) {
+            List<String> reminders = calendarService.getTodaysReminders();
+            this.reminders.clear();
+            this.reminders.addAll(reminders);
+            System.out.println("🔔 Reminders synced: " + reminders.size() + " reminders loaded");
+        }
+    }
+    
+    public void setCalendarEmail(String email) {
+        this.calendarService = new CalendarService(email);
+        System.out.println("📧 Calendar service connected to: " + email);
+    }
+    
+    public String getCalendarStatus() {
+        return calendarService != null ? calendarService.getServiceStatus() : "Calendar Service Not Connected";
+    }
+    
+    // Personalization methods (kept for manual additions)
+    public void addReminder(String reminder) {
+        reminders.add(reminder);
+        System.out.println("🔔 Reminder added: " + reminder);
+    }
+    
+    public void addCalendarEvent(String event) {
+        calendarEvents.add(event);
+        System.out.println("📅 Calendar event added: " + event);
+    }
+    
+    public void setWeather(String weather, double temperature) {
+        this.weather = weather;
+        this.temperature = temperature;
+        System.out.println("🌤️  Weather updated: " + weather + " | " + temperature + "°C");
+    }
+    
+    public void refreshVerse() {
+        updateDailyVerse();
+        System.out.println("📖 Quran verse refreshed!");
+    }
+    
+    // Getters
+    public boolean isMirrorMode() { return isMirrorMode; }
+    public String getQiblaDirection() { return qiblaDirection; }
+    public String getCity() { return city; }
+    
+    @Override
+    public void executeCommand(String command) {
+        switch (command.toUpperCase()) {
+            case "ON": turnOn(); break;
+            case "OFF": turnOff(); break;
+            case "TOGGLE": toggleMode(); break;
+            case "BRIEFING": displayBriefing(); break;
+            case "CALENDAR": displayIslamicCalendar(); break;
+            case "QURAN": displayQuranVerseOnly(); break;
+            case "REFRESH_VERSE": refreshVerse(); break;
+            case "SYNC_CALENDAR": 
+                syncCalendarEvents(); 
+                syncReminders();
+                break;
+            default: System.out.println("Unknown command for Smart Mirror: " + command);
+        }
+    }
+    
+    @Override
+    public boolean isControllable() {
+        return true;
+    }
+    
+    @Override
+    public double getEnergyConsumption() {
+        return isOn ? 8.0 : 0.5;
+    }
+    
+    @Override
+    public void setEnergyMode(String mode) {
+        System.out.println("🪞 Smart Mirror energy mode set to: " + mode);
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\SmartPlug.java
+package com.smarthome.model;
+
+import com.smarthome.interfaces.Controllable;
+import com.smarthome.interfaces.EnergyConsumer;
+
+public class SmartPlug extends SmartDevice implements Controllable, EnergyConsumer {
+    private double powerUsage;
+    private String energyMode;
+    
+    public SmartPlug(String deviceId, String name) {
+        super(deviceId, name);
+        this.powerUsage = 0.0;
+        this.energyMode = "NORMAL";
+    }
+    
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        this.powerUsage = 5.0;
+        System.out.println(name + " turned ON");
+    }
+    
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        this.powerUsage = 0.0;
+        System.out.println(name + " turned OFF");
+    }
+    
+    @Override
+    public String getStatus() {
+        return isOn ? String.format("ON (%.1fW)", powerUsage) : "OFF";
+    }
+    
+    @Override
+    public void executeCommand(String command) {
+        if (command.equalsIgnoreCase("ON")) {
+            turnOn();
+        } else if (command.equalsIgnoreCase("OFF")) {
+            turnOff();
+        }
+    }
+    
+    @Override
+    public boolean isControllable() {
+        return true;
+    }
+    
+    @Override
+    public double getEnergyConsumption() {
+        return isOn ? powerUsage : 0.0;
+    }
+    
+    @Override
+    public void setEnergyMode(String mode) {
+        this.energyMode = mode;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\SmartTV.java
+package com.smarthome.model;
+
+import com.smarthome.interfaces.Controllable;
+import com.smarthome.interfaces.EnergyConsumer;
+
+public class SmartTV extends SmartDevice implements Controllable, EnergyConsumer {
+    private int volume;
+    private int channel;
+    private String energyMode;
+    private boolean isMuted;  // Add this field
+    private int previousVolume; // To restore volume after unmute
+    
+    public SmartTV(String deviceId, String name) {
+        super(deviceId, name);
+        this.volume = 50;
+        this.channel = 1;
+        this.energyMode = "NORMAL";
+        this.isMuted = false;
+        this.previousVolume = 50;
+    }
+    
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        System.out.println(name + " turned ON");
+    }
+    
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        System.out.println(name + " turned OFF");
+    }
+    
+    @Override
+    public String getStatus() {
+        return isOn ? String.format("ON (Channel: %d, Volume: %d%s)", channel, volume, isMuted ? " - MUTED" : "") : "OFF";
+    }
+    
+    public void setVolume(int volume) {
+        if (volume < 0 || volume > 100) {
+            throw new IllegalArgumentException("Volume must be between 0 and 100");
+        }
+        this.volume = volume;
+        if (volume > 0) {
+            this.isMuted = false; // Automatically unmute when volume is set above 0
+        }
+    }
+    
+    public void setChannel(int channel) {
+        this.channel = channel;
+    }
+    
+    // ADD THESE MUTE METHODS:
+    public void mute() {
+        if (!isMuted && isOn) {
+            this.previousVolume = this.volume;
+            this.volume = 0;
+            this.isMuted = true;
+            System.out.println("TV " + getName() + " is now muted");
+        }
+    }
+    
+    public void unmute() {
+        if (isMuted && isOn) {
+            this.volume = this.previousVolume;
+            this.isMuted = false;
+            System.out.println("TV " + getName() + " is now unmuted. Volume: " + volume);
+        }
+    }
+    
+    public boolean isMuted() {
+        return isMuted;
+    }
+    
+    public void executeMuteCommand(boolean mute) {
+        if (mute) {
+            mute();
+        } else {
+            unmute();
+        }
+    }
+    
+    @Override
+    public void executeCommand(String command) {
+        if (command.equalsIgnoreCase("ON")) {
+            turnOn();
+        } else if (command.equalsIgnoreCase("OFF")) {
+            turnOff();
+        } else if (command.equalsIgnoreCase("MUTE")) {
+            mute();
+        } else if (command.equalsIgnoreCase("UNMUTE")) {
+            unmute();
+        }
+    }
+    
+    @Override
+    public boolean isControllable() {
+        return true;
+    }
+    
+    @Override
+    public double getEnergyConsumption() {
+        return isOn ? 15.0 : 0.5;
+    }
+    
+    @Override
+    public void setEnergyMode(String mode) {
+        this.energyMode = mode;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\Speaker.java
+package com.smarthome.model;
+
+import com.smarthome.interfaces.Controllable;
+import com.smarthome.interfaces.EnergyConsumer;
+
+public class Speaker extends SmartDevice implements Controllable, EnergyConsumer {
+    private int volume;
+    private boolean playing;
+    private String energyMode;
+    
+    public Speaker(String deviceId, String name) {
+        super(deviceId, name);
+        this.volume = 50;
+        this.playing = false;
+        this.energyMode = "NORMAL";
+    }
+    
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        System.out.println(name + " turned ON");
+    }
+    
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        this.playing = false;
+        System.out.println(name + " turned OFF");
+    }
+    
+    @Override
+    public String getStatus() {
+        if (!isOn) return "OFF";
+        return playing ? "PLAYING (Vol: " + volume + "%)" : "STANDBY (Vol: " + volume + "%)";
+    }
+    
+    public void setVolume(int volume) {
+        if (volume < 0 || volume > 100) {
+            throw new IllegalArgumentException("Volume must be between 0 and 100");
+        }
+        this.volume = volume;
+        System.out.println(name + " volume set to " + volume + "%");
+    }
+    
+    public void play() {
+        if (isOn) {
+            this.playing = true;
+            System.out.println(name + " started playing");
+        }
+    }
+    
+    public void pause() {
+        this.playing = false;
+        System.out.println(name + " paused");
+    }
+    
+    public boolean isPlaying() {
+        return playing;
+    }
+    
+    @Override
+    public void executeCommand(String command) {
+        if (command.equalsIgnoreCase("ON")) {
+            turnOn();
+        } else if (command.equalsIgnoreCase("OFF")) {
+            turnOff();
+        } else if (command.equalsIgnoreCase("PLAY")) {
+            play();
+        } else if (command.equalsIgnoreCase("PAUSE")) {
+            pause();
+        }
+    }
+    
+    @Override
+    public boolean isControllable() {
+        return true;
+    }
+    
+    @Override
+    public double getEnergyConsumption() {
+        return isOn ? (playing ? volume * 0.08 : 2.0) : 0.0;
+    }
+    
+    @Override
+    public void setEnergyMode(String mode) {
+        this.energyMode = mode;
+    }
+}
+// FILE: C:\Users\Hafsi Eya\Desktop\smart-home-automation-2025\src\main\java\com\smarthome\model\Thermostat.java
+package com.smarthome.model;
+
+import com.smarthome.interfaces.Controllable;
+import com.smarthome.interfaces.EnergyConsumer;
+import com.smarthome.interfaces.Schedulable;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Thermostat extends SmartDevice implements Controllable, EnergyConsumer, Schedulable {
+    private double targetTemperature;
+    private double currentTemperature;
+    private String energyMode;
+    private Map<LocalTime, Runnable> scheduledTasks;
+    
+    public Thermostat(String deviceId, String name, double targetTemperature) {
+        super(deviceId, name);
+        this.targetTemperature = targetTemperature;
+        this.currentTemperature = 20.0;
+        this.energyMode = "NORMAL";
+        this.scheduledTasks = new HashMap<>();
+    }
+    
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+        System.out.println(name + " turned ON - Target: " + targetTemperature + "°C");
+    }
+    
+    @Override
+    public void turnOff() {
+        this.isOn = false;
+        System.out.println(name + " turned OFF");
+    }
+    
+    @Override
+    public String getStatus() {
+        return isOn ? String.format("ON (Target: %.1f°C, Current: %.1f°C)", 
+            targetTemperature, currentTemperature) : "OFF";
+    }
+    
+    public void setTargetTemperature(double temperature) {
+        if (temperature < 10 || temperature > 35) {
+            throw new IllegalArgumentException("Temperature must be between 10 and 35°C");
+        }
+        this.targetTemperature = temperature;
+        System.out.println(name + " target temperature set to " + temperature + "°C");
+    }
+    
+    @Override
+    public void executeCommand(String command) {
+        if (command.equalsIgnoreCase("ON")) {
+            turnOn();
+        } else if (command.equalsIgnoreCase("OFF")) {
+            turnOff();
+        }
+    }
+    
+    @Override
+    public boolean isControllable() {
+        return true;
+    }
+    
+    @Override
+    public double getEnergyConsumption() {
+        return isOn ? Math.abs(targetTemperature - currentTemperature) * 2.5 : 0.0;
+    }
+    
+    @Override
+    public void setEnergyMode(String mode) {
+        this.energyMode = mode;
+    }
+    
+    @Override
+    public void scheduleTask(LocalTime time, Runnable task) {
+        scheduledTasks.put(time, task);
+        System.out.println("Task scheduled for " + time);
+    }
+    
+    @Override
+    public void cancelScheduledTasks() {
+        scheduledTasks.clear();
+        System.out.println("All scheduled tasks cancelled");
+    }
+}

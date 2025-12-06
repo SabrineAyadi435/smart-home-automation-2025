@@ -57,6 +57,24 @@ public class Speaker extends SmartDevice implements Controllable, EnergyConsumer
     public boolean isPlaying() {
         return playing;
     }
+
+    public void playAdhan() {
+        if (!isOn) {
+            turnOn();
+        }
+        setVolume(90);
+        this.playing = true;
+        System.out.println("[INFO] " + name + " is now playing Adhan loudly (Volume: " + this.volume + "%)");
+    }
+    
+    // --- CORRECTED METHOD ---
+    public void stopAdhan() {
+        // Instead of turning off, we just stop playing and return to standby.
+        this.playing = false;
+        // We can also reset the volume to a normal level.
+        setVolume(50); 
+        System.out.println("[INFO] " + name + " finished playing Adhan and is now on standby.");
+    }
     
     @Override
     public void executeCommand(String command) {
@@ -84,5 +102,19 @@ public class Speaker extends SmartDevice implements Controllable, EnergyConsumer
     @Override
     public void setEnergyMode(String mode) {
         this.energyMode = mode;
+    }
+
+    // --- METHOD FOR EDUCATIONAL CONTENT ---
+    /**
+     * Makes the speaker "speak" the given text.
+     * @param text The text to be spoken.
+     */
+    public void speak(String text) {
+        if (!isOn) {
+            turnOn(); // Turn on the speaker if it's off
+        }
+        // Set a comfortable volume for spoken content
+        setVolume(60); 
+        System.out.println("[INFO] " + name + " is speaking: \"" + text + "\"");
     }
 }

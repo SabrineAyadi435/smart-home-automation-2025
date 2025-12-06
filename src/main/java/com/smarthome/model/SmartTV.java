@@ -7,12 +7,16 @@ public class SmartTV extends SmartDevice implements Controllable, EnergyConsumer
     private int volume;
     private int channel;
     private String energyMode;
+    private boolean isMuted;  // Add this field
+    private int previousVolume; // To restore volume after unmute
     
     public SmartTV(String deviceId, String name) {
         super(deviceId, name);
         this.volume = 50;
         this.channel = 1;
         this.energyMode = "NORMAL";
+        this.isMuted = false;
+        this.previousVolume = 50;
     }
     
     @Override
@@ -29,7 +33,7 @@ public class SmartTV extends SmartDevice implements Controllable, EnergyConsumer
     
     @Override
     public String getStatus() {
-        return isOn ? String.format("ON (Channel: %d, Volume: %d)", channel, volume) : "OFF";
+        return isOn ? String.format("ON (Channel: %d, Volume: %d%s)", channel, volume, isMuted ? " - MUTED" : "") : "OFF";
     }
     
     public void setVolume(int volume) {
@@ -37,10 +41,43 @@ public class SmartTV extends SmartDevice implements Controllable, EnergyConsumer
             throw new IllegalArgumentException("Volume must be between 0 and 100");
         }
         this.volume = volume;
+        if (volume > 0) {
+            this.isMuted = false; // Automatically unmute when volume is set above 0
+        }
     }
     
     public void setChannel(int channel) {
         this.channel = channel;
+    }
+    
+    // ADD THESE MUTE METHODS:
+    public void mute() {
+        if (!isMuted && isOn) {
+            this.previousVolume = this.volume;
+            this.volume = 0;
+            this.isMuted = true;
+            System.out.println("TV " + getName() + " is now muted");
+        }
+    }
+    
+    public void unmute() {
+        if (isMuted && isOn) {
+            this.volume = this.previousVolume;
+            this.isMuted = false;
+            System.out.println("TV " + getName() + " is now unmuted. Volume: " + volume);
+        }
+    }
+    
+    public boolean isMuted() {
+        return isMuted;
+    }
+    
+    public void executeMuteCommand(boolean mute) {
+        if (mute) {
+            mute();
+        } else {
+            unmute();
+        }
     }
     
     @Override
@@ -49,6 +86,10 @@ public class SmartTV extends SmartDevice implements Controllable, EnergyConsumer
             turnOn();
         } else if (command.equalsIgnoreCase("OFF")) {
             turnOff();
+        } else if (command.equalsIgnoreCase("MUTE")) {
+            mute();
+        } else if (command.equalsIgnoreCase("UNMUTE")) {
+            unmute();
         }
     }
     
