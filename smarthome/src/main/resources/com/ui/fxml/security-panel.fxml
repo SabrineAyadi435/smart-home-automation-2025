@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="com.ui.controllers.SecurityPanelController" 
+      styleClass="content-panel" spacing="20">
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+    
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Security System" styleClass="page-title" style="-fx-font-size: 24pt; -fx-font-weight: bold;"/>
+    </HBox>
+    
+    <!-- System Status Section -->
+    <VBox spacing="15" styleClass="control-section" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 8px;">
+        <Label text="System Status" styleClass="section-title" style="-fx-font-size: 16pt; -fx-font-weight: bold;"/>
+        
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <Label text="Current Status:"/>
+            <Label fx:id="statusLabel" text="DISARMED" style="-fx-font-size: 18pt; -fx-font-weight: bold; -fx-text-fill: #4CAF50;" minWidth="150"/>
+        </HBox>
+        
+        <!-- Control Buttons -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button fx:id="armButton" text="🛡 Arm System" onAction="#handleArmSystem"
+                    style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
+            <Button fx:id="disarmButton" text="✓ Disarm System" onAction="#handleDisarmSystem"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
+            <Button fx:id="nightModeButton" text="🌙 Night Mode" onAction="#handleNightMode"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
+            <Button fx:id="awayModeButton" text="🏠 Away Mode" onAction="#handleAwayMode"
+                    style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
+        </HBox>
+    </VBox>
+    
+    <HBox spacing="20" HBox.hgrow="ALWAYS">
+        <!-- Security Devices Section -->
+        <VBox spacing="10" styleClass="control-section" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 8px;" HBox.hgrow="ALWAYS" minWidth="400">
+            <Label text="Security Devices" styleClass="section-title" style="-fx-font-size: 16pt; -fx-font-weight: bold;"/>
+            
+            <ScrollPane fitToWidth="true" prefHeight="300">
+                <VBox fx:id="securityDevicesContainer" spacing="8"/>
+            </ScrollPane>
+        </VBox>
+        
+        <!-- Security Log Section -->
+        <VBox spacing="10" styleClass="control-section" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 8px;" HBox.hgrow="ALWAYS" minWidth="400">
+            <Label text="Recent Security Events" styleClass="section-title" style="-fx-font-size: 16pt; -fx-font-weight: bold;"/>
+            
+            <ScrollPane fitToWidth="true" prefHeight="300">
+                <VBox fx:id="securityLogContainer" spacing="5"/>
+            </ScrollPane>
+        </VBox>
+    </HBox>
+    
+</VBox>

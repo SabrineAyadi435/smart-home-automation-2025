@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.Double?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.ClosePath?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.LineTo?>
+<?import javafx.scene.shape.MoveTo?>
+<?import javafx.scene.shape.Path?>
+<?import javafx.scene.shape.Rectangle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.ui.controllers.HomeViewController"
+            style="-fx-background-color: #FAFAFA;">
+    
+    <!-- Top header with title and Add Room button -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20; -fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+            <Label text="Home Layout" style="-fx-font-size: 24pt; -fx-font-weight: bold; -fx-text-fill: #212121;"/>
+            
+            <!-- Spacer to push button to the right -->
+            <HBox HBox.hgrow="ALWAYS"/>
+            
+            <Button fx:id="addRoomButton" text="+ Add Room" onAction="#addRoom"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 10 20; -fx-background-radius: 4; -fx-cursor: hand;">
+            </Button>
+        </HBox>
+    </top>
+    
+    <!-- Center content with visual floor plan -->
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: #E8F5E9; -fx-background: #E8F5E9;">
+            <content>
+                <javafx.scene.layout.VBox alignment="TOP_CENTER" spacing="20" style="-fx-background-color: #E8F5E9; -fx-padding: 20;">
+                    <children>
+                        <AnchorPane fx:id="floorPlanCanvas" prefWidth="850" prefHeight="650" />
+                    </children>
+                </javafx.scene.layout.VBox>
+            </content>
+        </ScrollPane>
+    </center>
+    
+</BorderPane>

@@ -54,6 +54,24 @@ public class AC extends SmartDevice implements Controllable, EnergyConsumer, Sch
         this.targetTemperature = temperature;
         System.out.println(name + " target temperature set to " + temperature + "°C");
     }
+    
+    public double getTargetTemperature() {
+        return targetTemperature;
+    }
+    
+    private String fanSpeed = "MEDIUM"; // LOW, MEDIUM, HIGH, AUTO
+    
+    public void setFanSpeed(String speed) {
+        if (!speed.equals("LOW") && !speed.equals("MEDIUM") && !speed.equals("HIGH") && !speed.equals("AUTO")) {
+            throw new IllegalArgumentException("Fan speed must be LOW, MEDIUM, HIGH, or AUTO");
+        }
+        this.fanSpeed = speed;
+        System.out.println(name + " fan speed set to " + speed);
+    }
+    
+    public String getFanSpeed() {
+        return fanSpeed;
+    }
 
     @Override
     public void executeCommand(String command) {

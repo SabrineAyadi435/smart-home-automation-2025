@@ -7,8 +7,8 @@ import com.interfaces.WaterConsumer;
 public class SmartFaucet extends SmartDevice implements Controllable, WaterConsumer {
 
     private double currentWaterFlowLitersPerMinute; // Example state variable
-    private double totalWaterConsumedLiters;       // Example state variable
-    private boolean isControllable;                // Example state variable
+    private double totalWaterConsumedLiters; // Example state variable
+    private boolean isControllable; // Example state variable
 
     // Constructor to initialize the SmartFaucet (calls SmartDevice constructor)
     public SmartFaucet(String deviceId, String name, EnergyMode energyMode, boolean isControllable) {
@@ -98,11 +98,36 @@ public class SmartFaucet extends SmartDevice implements Controllable, WaterConsu
         return this.currentWaterFlowLitersPerMinute;
     }
 
-    // Example method to simulate tracking water consumption (could be called by a timer/event)
+    // Example method to simulate tracking water consumption (could be called by a
+    // timer/event)
     public void trackWaterConsumption(double timeInMinutes) {
         if (this.isOn) {
             double consumed = this.currentWaterFlowLitersPerMinute * timeInMinutes;
             this.totalWaterConsumedLiters += consumed;
+        }
+    }
+
+    public void setFlowRate(double flowRate) {
+        if (flowRate < 0 || flowRate > 10) {
+            throw new IllegalArgumentException("Flow rate must be between 0 and 10 L/min");
+        }
+        this.currentWaterFlowLitersPerMinute = flowRate;
+        System.out.println(name + " flow rate set to " + flowRate + " L/min");
+    }
+
+    public double getFlowRate() {
+        return currentWaterFlowLitersPerMinute;
+    }
+
+    /**
+     * Manually adds water consumption (e.g. for specific events like Wudu).
+     * 
+     * @param amount Liters to add
+     */
+    public void addWaterConsumption(double amount) {
+        if (amount > 0) {
+            this.totalWaterConsumedLiters += amount;
+            System.out.println(this.name + " added " + amount + "L manually.");
         }
     }
 }

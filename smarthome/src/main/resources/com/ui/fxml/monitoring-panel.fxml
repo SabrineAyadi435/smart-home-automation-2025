@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import com.ui.components.MonitoringWidget?>
+
+<VBox xmlns="http://javafx.com/javafx/21" 
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.ui.controllers.MonitoringController"
+      spacing="20" 
+      style="-fx-background-color: #FAFAFA; -fx-padding: 20px;">
+    
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Energy &amp; Water Monitoring" 
+               style="-fx-font-size: 24pt; -fx-font-weight: bold; -fx-text-fill: #333333;"/>
+    </HBox>
+    
+    <!-- Monitoring Widgets Grid -->
+    <GridPane hgap="20" vgap="20">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25" minWidth="200"/>
+            <ColumnConstraints percentWidth="25" minWidth="200"/>
+            <ColumnConstraints percentWidth="25" minWidth="200"/>
+            <ColumnConstraints percentWidth="25" minWidth="200"/>
+        </columnConstraints>
+        
+        <!-- Energy Widgets -->
+        <VBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <MonitoringWidget fx:id="totalEnergyWidget"/>
+        </VBox>
+        
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <MonitoringWidget fx:id="currentEnergyWidget"/>
+        </VBox>
+        
+        <!-- Water Widgets -->
+        <VBox GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <MonitoringWidget fx:id="totalWaterWidget"/>
+        </VBox>
+        
+        <VBox GridPane.columnIndex="3" GridPane.rowIndex="0">
+            <MonitoringWidget fx:id="currentWaterWidget"/>
+        </VBox>
+    </GridPane>
+    
+    <!-- Per-Room Consumption Table -->
+    <VBox spacing="10" VBox.vgrow="ALWAYS">
+        <Label text="Per-Room Consumption" 
+               style="-fx-font-size: 18pt; -fx-font-weight: bold; -fx-text-fill: #333333;"/>
+        
+        <TableView fx:id="roomConsumptionTable" VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: white; -fx-background-radius: 8px;">
+            <columns>
+                <TableColumn fx:id="roomNameColumn" text="Room" prefWidth="150" minWidth="100"/>
+                <TableColumn fx:id="currentEnergyColumn" text="Current Energy (W)" prefWidth="150" minWidth="120"/>
+                <TableColumn fx:id="totalEnergyColumn" text="Total Energy (kWh)" prefWidth="150" minWidth="120"/>
+                <TableColumn fx:id="currentWaterColumn" text="Current Water (L/min)" prefWidth="150" minWidth="120"/>
+                <TableColumn fx:id="totalWaterColumn" text="Total Water (L)" prefWidth="150" minWidth="120"/>
+            </columns>
+            <placeholder>
+                <Label text="No room data available" style="-fx-text-fill: #9E9E9E;"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+    
+    <!-- Last Updated Label -->
+    <HBox alignment="CENTER_RIGHT">
+        <Label fx:id="lastUpdatedLabel" 
+               text="Last Updated: --" 
+               style="-fx-font-size: 12pt; -fx-text-fill: #757575;"/>
+    </HBox>
+</VBox>

@@ -58,6 +58,22 @@ public class Speaker extends SmartDevice implements Controllable, EnergyConsumer
         return playing;
     }
     
+    public int getVolume() {
+        return volume;
+    }
+    
+    public void next() {
+        if (isOn) {
+            System.out.println(name + " skipped to next track");
+        }
+    }
+    
+    public void previous() {
+        if (isOn) {
+            System.out.println(name + " went to previous track");
+        }
+    }
+    
     @Override
     public void executeCommand(String command) {
         if (command.equalsIgnoreCase("ON")) {

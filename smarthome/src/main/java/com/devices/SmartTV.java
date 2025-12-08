@@ -44,6 +44,29 @@ public class SmartTV extends SmartDevice implements Controllable, EnergyConsumer
         this.channel = channel;
     }
     
+    public int getVolume() {
+        return volume;
+    }
+    
+    public int getChannel() {
+        return channel;
+    }
+    
+    private String inputSource = "HDMI1"; // HDMI1, HDMI2, HDMI3, USB, TV
+    
+    public void setInputSource(String source) {
+        if (!source.equals("HDMI1") && !source.equals("HDMI2") && !source.equals("HDMI3") && 
+            !source.equals("USB") && !source.equals("TV")) {
+            throw new IllegalArgumentException("Input source must be HDMI1, HDMI2, HDMI3, USB, or TV");
+        }
+        this.inputSource = source;
+        System.out.println(name + " input source set to " + source);
+    }
+    
+    public String getInputSource() {
+        return inputSource;
+    }
+    
     @Override
     public void executeCommand(String command) {
         if (command.equalsIgnoreCase("ON")) {

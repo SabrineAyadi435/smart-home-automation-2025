@@ -220,4 +220,16 @@ public class SmokeDetector extends SmartDevice implements Controllable, Schedula
     private void updateTimestamp() {
         this.lastUpdated = LocalDateTime.now();
     }
+    
+    public String getLastReading() {
+        return smokeDetected ? "Smoke Detected" : "Clear";
+    }
+    
+    public LocalDateTime getLastUpdateTime() {
+        return lastUpdated;
+    }
+    
+    public double getBatteryLevel() {
+        return batteryLevel;
+    }
 }

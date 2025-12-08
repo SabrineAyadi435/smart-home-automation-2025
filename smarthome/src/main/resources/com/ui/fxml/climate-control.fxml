@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.ui.controllers.ClimateController" 
+      styleClass="content-panel" spacing="20">
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+    
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Climate Control" styleClass="page-title" style="-fx-font-size: 24pt; -fx-font-weight: bold;"/>
+    </HBox>
+    
+    <!-- Master Temperature Control -->
+    <VBox spacing="10" styleClass="control-section" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 8px;">
+        <Label text="Master Temperature Control" styleClass="section-title" style="-fx-font-size: 16pt; -fx-font-weight: bold;"/>
+        
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <Label text="Set All Rooms:"/>
+            <Slider fx:id="masterTemperatureSlider" min="15" max="30" value="22" 
+                    showTickLabels="true" showTickMarks="true" majorTickUnit="5" minorTickCount="1"
+                    prefWidth="300"/>
+            <Label fx:id="masterTemperatureLabel" text="22.0 C" style="-fx-font-size: 14pt; -fx-font-weight: bold;" minWidth="60"/>
+            <Button fx:id="applyMasterTempButton" text="Apply to All Rooms" onAction="#handleApplyMasterTemperature"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8px 16px;"/>
+        </HBox>
+        
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <Label text="Atmospheric Temperature:"/>
+            <Label fx:id="atmosphericTempLabel" text="-- C" style="-fx-font-size: 14pt; -fx-font-weight: bold; -fx-text-fill: #666;"/>
+        </HBox>
+    </VBox>
+    
+    <!-- Room Climate Controls -->
+    <VBox spacing="15" styleClass="control-section" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 8px;">
+        <Label text="Individual Room Controls" styleClass="section-title" style="-fx-font-size: 16pt; -fx-font-weight: bold;"/>
+        
+        <ScrollPane fitToWidth="true" prefHeight="400">
+            <VBox fx:id="roomClimateContainer" spacing="10"/>
+        </ScrollPane>
+    </VBox>
+    
+</VBox>

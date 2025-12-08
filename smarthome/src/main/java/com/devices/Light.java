@@ -39,6 +39,21 @@ public class Light extends SmartDevice implements Controllable, EnergyConsumer {
         System.out.println(name + " brightness set to " + brightness + "%");
     }
     
+    public int getBrightness() {
+        return brightness;
+    }
+    
+    private String color = "#FFFFFF"; // Default white color
+    
+    public void setColor(String color) {
+        this.color = color;
+        System.out.println(name + " color set to " + color);
+    }
+    
+    public String getColor() {
+        return color;
+    }
+    
     @Override
     public void executeCommand(String command) {
         if (command.equalsIgnoreCase("ON")) {

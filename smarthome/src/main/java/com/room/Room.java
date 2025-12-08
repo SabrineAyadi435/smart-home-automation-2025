@@ -15,8 +15,8 @@ import com.exceptions.DeviceNotFoundException;
  * Notes:
  * - It assumes SmartDevice#getPowerConsumption() returns power in watts (W).
  * - If SmartDevice has an isOn() method, it will be consulted (via reflection).
- *   If not present, the code will sum getPowerConsumption() directly (so device
- *   implementations should return 0 when powered off OR provide an isOn()).
+ * If not present, the code will sum getPowerConsumption() directly (so device
+ * implementations should return 0 when powered off OR provide an isOn()).
  */
 public class Room {
     private String name;
@@ -28,9 +28,9 @@ public class Room {
     /** accumulated energy in watt-hours (Wh) */
     private float totalEnergyConsumption;
 
-    private double currentwaterConsumption = 13.0;
-    private double totalwaterConsumption = 100.0;
-    
+    private double currentwaterConsumption = 0.0;
+    private double totalwaterConsumption = 0.0;
+
     public Room(String name) {
         this.name = name;
         this.devices = new ArrayList<>();
@@ -40,13 +40,13 @@ public class Room {
         this.airQuality = AirQuality.GOOD;
 
     }
-    
+
     public void addDevice(SmartDevice device) {
         devices.add(device);
         device.setRoom(this);
         System.out.println("Device " + device.getName() + " added to " + name);
     }
-    
+
     public void removeDevice(String deviceId) throws DeviceNotFoundException {
         SmartDevice device = findDeviceById(deviceId);
         if (device != null) {
@@ -56,14 +56,14 @@ public class Room {
             throw new DeviceNotFoundException("Device with ID " + deviceId + " not found in " + name);
         }
     }
-    
+
     public SmartDevice findDeviceById(String deviceId) {
         return devices.stream()
-            .filter(d -> d.getDeviceId().equals(deviceId))
-            .findFirst()
-            .orElse(null);
+                .filter(d -> d.getDeviceId().equals(deviceId))
+                .findFirst()
+                .orElse(null);
     }
-    
+
     public List<SmartDevice> findDevicesByType(Class<? extends SmartDevice> type) {
         List<SmartDevice> result = new ArrayList<>();
         for (SmartDevice device : devices) {
@@ -73,11 +73,11 @@ public class Room {
         }
         return result;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public List<SmartDevice> getDevices() {
         return new ArrayList<>(devices);
     }
@@ -86,7 +86,7 @@ public class Room {
         return temperature;
     }
 
-    public void setTemperature(double  temperature) {
+    public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
 
@@ -107,7 +107,8 @@ public class Room {
 
     /**
      * Recalculate the room's current total instantaneous power (W).
-     * This resets currentEnergyConsumption to the sum of all device.getPowerConsumption()
+     * This resets currentEnergyConsumption to the sum of all
+     * device.getPowerConsumption()
      * but will attempt to respect a device's isOn() if present.
      */
     public synchronized void recalculateCurrentEnergyConsumption() {
@@ -124,14 +125,19 @@ public class Room {
     }
 
     /**
-     * Accumulate energy into totalEnergyConsumption using the current instantaneous power.
-     * @param durationSeconds duration during which the current power was sustained (seconds)
+     * Accumulate energy into totalEnergyConsumption using the current instantaneous
+     * power.
+     * 
+     * @param durationSeconds duration during which the current power was sustained
+     *                        (seconds)
      *
-     * Calculation:
-     *   energy (Wh) = power (W) * time (h) = power * (seconds / 3600)
+     *                        Calculation:
+     *                        energy (Wh) = power (W) * time (h) = power * (seconds
+     *                        / 3600)
      */
     public synchronized void accumulateEnergyUsageSeconds(long durationSeconds) {
-        if (durationSeconds <= 0) return;
+        if (durationSeconds <= 0)
+            return;
         // ensure current is up-to-date before accumulating
         recalculateCurrentEnergyConsumption();
         float energyWh = this.currentEnergyConsumption * (durationSeconds / 3600.0f);
@@ -140,10 +146,12 @@ public class Room {
 
     /**
      * Convenience: accumulate energy using minutes.
+     * 
      * @param durationMinutes minutes
      */
     public synchronized void accumulateEnergyUsageMinutes(float durationMinutes) {
-        if (durationMinutes <= 0f) return;
+        if (durationMinutes <= 0f)
+            return;
         recalculateCurrentEnergyConsumption();
         float energyWh = this.currentEnergyConsumption * (durationMinutes / 60.0f);
         this.totalEnergyConsumption += energyWh;
@@ -153,7 +161,8 @@ public class Room {
      * Add an explicit energy amount (in Wh) to the total.
      */
     public synchronized void addToTotalEnergyConsumptionWh(float energyWh) {
-        if (energyWh <= 0f) return;
+        if (energyWh <= 0f)
+            return;
         this.totalEnergyConsumption += energyWh;
     }
 

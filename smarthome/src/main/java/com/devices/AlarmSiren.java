@@ -63,6 +63,22 @@ public class AlarmSiren extends SmartDevice implements Controllable, EnergyConsu
         logEvent("Alarm stopped");
     }
     
+    public void trigger() {
+        try {
+            triggerAlarm();
+        } catch (InvalidOperationException e) {
+            System.err.println("Failed to trigger alarm: " + e.getMessage());
+        }
+    }
+    
+    public void silence() {
+        stopAlarm();
+    }
+    
+    public boolean isTriggered() {
+        return isSounding;
+    }
+    
     public void setVolume(int level) throws InvalidOperationException {
         if (level < 1 || level > 10) {
             throw new InvalidOperationException("Volume must be between 1 and 10");

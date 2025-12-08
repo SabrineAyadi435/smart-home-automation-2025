@@ -61,6 +61,26 @@ public class SecurityCamera extends SmartDevice implements Controllable, Schedul
         updateTimestamp();
         logEvent("Camera stopped recording");
     }
+    
+    public void startRecording() {
+        if (!isRecording) {
+            this.isRecording = true;
+            updateTimestamp();
+            logEvent("Recording started");
+        }
+    }
+    
+    public void stopRecording() {
+        if (isRecording) {
+            this.isRecording = false;
+            updateTimestamp();
+            logEvent("Recording stopped");
+        }
+    }
+    
+    public boolean isRecording() {
+        return isRecording;
+    }
 
     @Override
     public boolean isOn() {

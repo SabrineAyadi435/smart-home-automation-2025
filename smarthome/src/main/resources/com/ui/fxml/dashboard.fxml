@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.geometry.Insets?>
+
+<!--
+  Main dashboard layout for the Smart Home Dashboard.
+  BorderPane with navigation menu (left), content area (center), and status bar (bottom).
+-->
+<BorderPane xmlns="http://javafx.com/javafx/21" 
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.ui.controllers.DashboardController"
+            fx:id="mainLayout"
+            prefHeight="800.0" prefWidth="1200.0"
+            stylesheets="@../css/main.css"
+            styleClass="dashboard-root">
+    
+    <!-- Left: Navigation Menu -->
+    <left>
+        <VBox fx:id="navigationMenu" spacing="5" styleClass="navigation-menu">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10"/>
+            </padding>
+            
+            <!-- Dashboard Title -->
+            <Label text="Smart Home" styleClass="nav-title" 
+                   style="-fx-text-fill: white; -fx-font-size: 20pt; -fx-font-weight: bold; -fx-padding: 0 0 20 0;"/>
+            
+            <!-- Navigation Buttons -->
+            <Button fx:id="homeViewButton" text="🏠 Home View" 
+                    onAction="#showHomeView" 
+                    styleClass="nav-button"
+                    prefWidth="180" prefHeight="40"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center-left; -fx-padding: 10 20;"/>
+            
+            <Button fx:id="monitoringViewButton" text="📊 Monitoring" 
+                    onAction="#showMonitoringView" 
+                    styleClass="nav-button"
+                    prefWidth="180" prefHeight="40"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center-left; -fx-padding: 10 20;"/>
+            
+            <Button fx:id="climateViewButton" text="🌡️ Climate" 
+                    onAction="#showClimateView" 
+                    styleClass="nav-button"
+                    prefWidth="180" prefHeight="40"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center-left; -fx-padding: 10 20;"/>
+            
+            <Button fx:id="securityViewButton" text="🔒 Security" 
+                    onAction="#showSecurityView" 
+                    styleClass="nav-button"
+                    prefWidth="180" prefHeight="40"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center-left; -fx-padding: 10 20;"/>
+            
+            <!-- Spacer -->
+            <VBox VBox.vgrow="ALWAYS"/>
+            
+            <!-- Refresh Button -->
+            <Button text="🔄 Refresh All" 
+                    onAction="#refreshAllData" 
+                    styleClass="nav-button"
+                    prefWidth="180" prefHeight="40"
+                    style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center; -fx-padding: 10 20; -fx-background-radius: 4;"/>
+        </VBox>
+    </left>
+    
+    <!-- Center: Content Area -->
+    <center>
+        <!-- Main content stack with toast overlay -->
+        <StackPane>
+            <!-- Content area (background layer) -->
+            <StackPane fx:id="contentArea" style="-fx-background-color: #FAFAFA;">
+                <!-- Content will be dynamically loaded here -->
+                <VBox alignment="CENTER" spacing="20">
+                    <Label text="Welcome to Smart Home Dashboard" 
+                           style="-fx-font-size: 32pt; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                    <Label text="Select a view from the navigation menu" 
+                           style="-fx-font-size: 16pt; -fx-text-fill: #757575;"/>
+                </VBox>
+            </StackPane>
+            
+            <!-- Toast notification overlay (top layer) -->
+            <VBox fx:id="toastContainer" 
+                  alignment="TOP_RIGHT" 
+                  spacing="10"
+                  pickOnBounds="false"
+                  mouseTransparent="false"
+                  style="-fx-padding: 20;">
+                <!-- Toast notifications will be added here dynamically -->
+            </VBox>
+        </StackPane>
+    </center>
+    
+    <!-- Bottom: Status Bar -->
+    <bottom>
+        <HBox fx:id="statusBar" spacing="15" alignment="CENTER_LEFT" 
+              style="-fx-background-color: #E0E0E0; -fx-padding: 8 15;">
+            
+            <!-- Time Control Section -->
+            <Label text="🕐" style="-fx-font-size: 14pt;"/>
+            <Label fx:id="simulatedTimeLabel" text="2025-12-08 19:20:00" 
+                   style="-fx-font-size: 12pt; -fx-font-weight: bold; -fx-text-fill: #1976D2;"/>
+            
+            <Button fx:id="rewindBtn" text="◀◀" 
+                    style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #90CAF9; -fx-text-fill: white;"/>
+            <Button fx:id="pausePlayBtn" text="▶" 
+                    style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+            <Button fx:id="forwardBtn" text="▶▶" 
+                    style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #90CAF9; -fx-text-fill: white;"/>
+            
+            <Label text="Speed:" style="-fx-font-size: 11pt;"/>
+            <ComboBox fx:id="speedCombo" prefWidth="80" 
+                      style="-fx-font-size: 10pt;"/>
+            
+            <!-- Separator -->
+            <Label text="|" style="-fx-text-fill: #BDBDBD;"/>
+            
+            <!-- Ramadan Mode -->
+            <Button fx:id="ramadanModeBtn" text="🌙 Ramadan Mode" 
+                    style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #78909C; -fx-text-fill: white;"/>
+            
+            <!-- Separator -->
+            <Label text="|" style="-fx-text-fill: #BDBDBD;"/>
+            
+            <!-- Status Section -->
+            <Label fx:id="statusLabel" text="Status: Ready" 
+                   style="-fx-font-size: 11pt; -fx-text-fill: #424242;"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lastUpdatedLabel" text="Last Updated: --" 
+                   style="-fx-font-size: 10pt; -fx-text-fill: #757575;"/>
+        </HBox>
+    </bottom>
+    
+</BorderPane>

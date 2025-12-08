@@ -148,5 +148,17 @@ public class SmartFridge extends SmartDevice implements Controllable, EnergyCons
     public int getTemperatureSetting() {
         return temperatureSetting;
     }
+    
+    public void setTemperatureSetting(int setting) {
+        if (setting < 1 || setting > 7) {
+            throw new IllegalArgumentException("Temperature setting must be between 1 and 7");
+        }
+        this.temperatureSetting = setting;
+        System.out.println(name + " temperature setting set to " + setting);
+    }
+    
+    public boolean isDoorOpen() {
+        return doorOpen;
+    }
 
 }

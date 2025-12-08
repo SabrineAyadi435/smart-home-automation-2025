@@ -154,4 +154,12 @@ public class DoorWindowSensor extends SmartDevice implements Controllable, Energ
         super.setEnergyMode(mode);
         this.energyMode = mode;
     }
+    
+    public String getLastReading() {
+        return isOpen ? "Open" : "Closed";
+    }
+    
+    public LocalDateTime getLastUpdateTime() {
+        return lastUpdated;
+    }
 }

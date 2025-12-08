@@ -151,4 +151,13 @@ public class AirQualitySensor extends SmartDevice implements Controllable, AirQu
                 return baseConsumption;
         }
     }
+    
+    public String getLastReading() {
+        return String.format("CO2: %.0f ppm, Humidity: %.1f%%, AQI: %.0f", 
+            co2Level, humidity, airQualityIndex);
+    }
+    
+    public java.time.LocalDateTime getLastUpdateTime() {
+        return java.time.LocalDateTime.now();
+    }
 }

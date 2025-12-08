@@ -205,6 +205,13 @@ public class MotionSensor extends SmartDevice implements Controllable, Schedulab
         }
         return 0;
     }
-
+    
+    public String getLastReading() {
+        return isTriggered ? "Motion Detected" : "No Motion";
+    }
+    
+    public LocalDateTime getLastUpdateTime() {
+        return lastTriggerTime != null ? lastTriggerTime : lastUpdated;
+    }
 
 }

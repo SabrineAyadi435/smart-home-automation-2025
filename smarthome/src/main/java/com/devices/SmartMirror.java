@@ -13,8 +13,6 @@ import com.services.IslamicCalendarService;
 import com.services.QiblaService;
 import com.services.QuranAPIService;
 
-
-
 public class SmartMirror extends SmartDevice implements Controllable, EnergyConsumer {
     private boolean isMirrorMode;
     private String currentArabicVerse;
@@ -45,8 +43,8 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         this.temperature = 22.0;
         this.city = YOUR_CITY;
 
-
-        // --- SIMPLIFICATION: Initialize with a default email, which will be changed later ---
+        // --- SIMPLIFICATION: Initialize with a default email, which will be changed
+        // later ---
         this.calendarService = new CalendarService("user@example.com");
 
         QiblaService.QiblaDirection qibla = QiblaService.getQiblaDirection(YOUR_LATITUDE, YOUR_LONGITUDE);
@@ -90,22 +88,20 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
 
     @Override
     public String getStatus() {
-        return isOn ?
-            String.format("ON (%s - %s, %.1f°C)",
-                isMirrorMode ? "Mirror Mode" : "Display Mode", weather, temperature) :
-            "OFF";
+        return isOn ? String.format("ON (%s - %s, %.1f°C)",
+                isMirrorMode ? "Mirror Mode" : "Display Mode", weather, temperature) : "OFF";
     }
 
     public void toggleMode() {
         this.isMirrorMode = !this.isMirrorMode;
         System.out.println("Smart Mirror switched to " +
-            (isMirrorMode ? "Mirror Mode" : "Information Display Mode"));
+                (isMirrorMode ? "Mirror Mode" : "Information Display Mode"));
     }
 
     public void displayBriefing() {
         if (!isOn || isMirrorMode) {
-            System.out.println("[ERROR] Cannot display briefing: Mirror is " + 
-                (!isOn ? "OFF" : "in Mirror Mode"));
+            System.out.println("[ERROR] Cannot display briefing: Mirror is " +
+                    (!isOn ? "OFF" : "in Mirror Mode"));
             return;
         }
 
@@ -148,10 +144,49 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         printSeparator("=");
     }
 
+    /**
+     * Returns the briefing content as a formatted string for UI display
+     */
+    public String getBriefingContent() {
+        if (!isOn || isMirrorMode) {
+            return "Cannot display: Mirror is " + (!isOn ? "OFF" : "in Mirror Mode");
+        }
+
+        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getTodayIslamicDate();
+        syncReminders();
+
+        StringBuilder briefing = new StringBuilder();
+        briefing.append(getCurrentTime()).append(" | ").append(weather).append(" (").append(temperature)
+                .append("°C)\n");
+        briefing.append("Islamic Date: ").append(islamicDate.date).append("\n");
+        if (islamicDate.event != null) {
+            briefing.append("Event: ").append(islamicDate.event).append("\n");
+        }
+
+        if (currentTranslation != null && !currentTranslation.isEmpty()) {
+            briefing.append("\nVerse: \"").append(currentTranslation).append("\"\n");
+            briefing.append("(").append(currentSurahInfo).append(")\n");
+        }
+
+        if (!reminders.isEmpty()) {
+            briefing.append("\nReminders (" + reminders.size() + "):");
+            int count = 0;
+            for (String reminder : reminders) {
+                if (count++ >= 3) {
+                    briefing.append("\n... and ").append(reminders.size() - 3).append(" more");
+                    break;
+                }
+                briefing.append("\n• ").append(reminder);
+            }
+        }
+
+        return briefing.toString();
+    }
+
     public void displayIslamicCalendar() {
         if (!isOn || isMirrorMode) {
-            System.out.println("[ERROR] Cannot display Islamic calendar: Mirror is " + 
-                (!isOn ? "OFF" : "in Mirror Mode"));
+            System.out.println("[ERROR] Cannot display Islamic calendar: Mirror is " +
+                    (!isOn ? "OFF" : "in Mirror Mode"));
             return;
         }
 
@@ -173,13 +208,38 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         printSeparator("*");
     }
 
+    /**
+     * Returns the Islamic calendar content as a formatted string for UI display
+     */
+    public String getIslamicCalendarContent() {
+        if (!isOn || isMirrorMode) {
+            return "Cannot display: Mirror is " + (!isOn ? "OFF" : "in Mirror Mode");
+        }
+
+        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getTodayIslamicDate();
+
+        StringBuilder calendar = new StringBuilder();
+        calendar.append("Date: ").append(islamicDate.date).append("\n");
+
+        if (islamicDate.event != null) {
+            calendar.append("Event: ").append(islamicDate.event).append("\n");
+        } else {
+            calendar.append("No events today\n");
+        }
+
+        calendar.append(qiblaDirection).append("\n");
+        calendar.append("City: ").append(city);
+
+        return calendar.toString();
+    }
+
     public void displayQuranVerseOnly() {
         if (!isOn || isMirrorMode) {
-            System.out.println("[ERROR] Cannot display Quran verse: Mirror is " + 
-                (!isOn ? "OFF" : "in Mirror Mode"));
+            System.out.println("[ERROR] Cannot display Quran verse: Mirror is " +
+                    (!isOn ? "OFF" : "in Mirror Mode"));
             return;
         }
-        
+
         if (currentTranslation != null && !currentTranslation.isEmpty()) {
             System.out.println("[QURAN] " + currentTranslation + " " + currentSurahInfo);
         } else {
@@ -226,7 +286,8 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         return calendarService != null ? calendarService.getServiceStatus() : "Calendar Service Not Connected";
     }
 
-    // --- SIMPLIFICATION: Removed local add methods. The mirror now only displays what the service provides. ---
+    // --- SIMPLIFICATION: Removed local add methods. The mirror now only displays
+    // what the service provides. ---
     public void setWeather(String weather, double temperature) {
         this.weather = weather;
         this.temperature = temperature;
@@ -238,25 +299,59 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         System.out.println("[INFO] Quran verse refreshed!");
     }
 
-    public boolean isMirrorMode() { return isMirrorMode; }
-    public String getQiblaDirection() { return qiblaDirection; }
-    public String getCity() { return city; }
+    /**
+     * Returns the current Quran verse as a formatted string for UI display
+     */
+    public String getCurrentVerseContent() {
+        if (currentTranslation != null && !currentTranslation.isEmpty()) {
+            return "\"" + currentTranslation + "\"\n\n― " + currentSurahInfo;
+        } else {
+            return "No verse available. Try refreshing.";
+        }
+    }
+
+    public boolean isMirrorMode() {
+        return isMirrorMode;
+    }
+
+    public String getQiblaDirection() {
+        return qiblaDirection;
+    }
+
+    public String getCity() {
+        return city;
+    }
 
     @Override
     public void executeCommand(String command) {
         switch (command.toUpperCase()) {
-            case "ON": turnOn(); break;
-            case "OFF": turnOff(); break;
-            case "TOGGLE": toggleMode(); break;
-            case "BRIEFING": displayBriefing(); break;
-            case "CALENDAR": displayIslamicCalendar(); break;
-            case "QURAN": displayQuranVerseOnly(); break;
-            case "REFRESH_VERSE": refreshVerse(); break;
+            case "ON":
+                turnOn();
+                break;
+            case "OFF":
+                turnOff();
+                break;
+            case "TOGGLE":
+                toggleMode();
+                break;
+            case "BRIEFING":
+                displayBriefing();
+                break;
+            case "CALENDAR":
+                displayIslamicCalendar();
+                break;
+            case "QURAN":
+                displayQuranVerseOnly();
+                break;
+            case "REFRESH_VERSE":
+                refreshVerse();
+                break;
             // --- SIMPLIFICATION: Use a single, clear command for syncing ---
             case "SYNC_CALENDAR":
                 syncReminders();
                 break;
-            default: System.out.println("Unknown command for Smart Mirror: " + command);
+            default:
+                System.out.println("Unknown command for Smart Mirror: " + command);
         }
     }
 
@@ -290,5 +385,32 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         System.out.println();
     }
 
+    private String displayMode = "CLOCK"; // CLOCK, WEATHER, CALENDAR, NEWS, OFF
+    private int brightness = 80; // 0-100
+
+    public void setDisplayMode(String mode) {
+        if (!mode.equals("CLOCK") && !mode.equals("WEATHER") && !mode.equals("CALENDAR") &&
+                !mode.equals("NEWS") && !mode.equals("OFF")) {
+            throw new IllegalArgumentException("Display mode must be CLOCK, WEATHER, CALENDAR, NEWS, or OFF");
+        }
+        this.displayMode = mode;
+        System.out.println(name + " display mode set to " + mode);
+    }
+
+    public String getDisplayMode() {
+        return displayMode;
+    }
+
+    public void setBrightness(int brightness) {
+        if (brightness < 0 || brightness > 100) {
+            throw new IllegalArgumentException("Brightness must be between 0 and 100");
+        }
+        this.brightness = brightness;
+        System.out.println(name + " brightness set to " + brightness + "%");
+    }
+
+    public int getBrightness() {
+        return brightness;
+    }
 
 }

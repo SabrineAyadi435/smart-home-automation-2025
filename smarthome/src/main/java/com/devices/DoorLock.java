@@ -76,6 +76,10 @@ public class DoorLock extends SmartDevice implements Controllable, Schedulable, 
         }
     }
     
+    public boolean isLocked() {
+        return isLocked;
+    }
+    
     public void toggleLock() throws SecurityBreachException {
         if (isLocked) {
             unlock();

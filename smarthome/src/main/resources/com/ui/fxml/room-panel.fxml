@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.ui.controllers.RoomPanelController"
+            style="-fx-background-color: #FAFAFA;">
+    
+    <!-- Top: Room Header with Back Button -->
+    <top>
+        <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 20;">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Button fx:id="backButton" text="← Back" onAction="#handleBack"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;">
+                </Button>
+                
+                <Label fx:id="roomNameLabel" text="Room Name" style="-fx-font-size: 28pt; -fx-font-weight: bold; -fx-text-fill: #2196F3;">
+                    <font>
+                        <Font name="System Bold" size="28.0" />
+                    </font>
+                </Label>
+                
+                <Region HBox.hgrow="ALWAYS" />
+                
+                <Button fx:id="addDeviceButton" text="+ Add Device" onAction="#handleAddDevice"
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;">
+                </Button>
+            </HBox>
+            
+            <!-- Room Controls: Temperature and Air Quality -->
+            <HBox spacing="30" alignment="CENTER_LEFT" style="-fx-padding: 10 0 0 0;">
+                <!-- Temperature Control -->
+                <VBox spacing="5">
+                    <Label text="Temperature Control" style="-fx-font-size: 14pt; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="15°C" style="-fx-font-size: 12pt; -fx-text-fill: #757575;" />
+                        <Slider fx:id="temperatureSlider" min="15" max="30" value="20" 
+                                showTickLabels="false" showTickMarks="false" 
+                                prefWidth="200" blockIncrement="0.5"
+                                style="-fx-cursor: hand;" />
+                        <Label text="30°C" style="-fx-font-size: 12pt; -fx-text-fill: #757575;" />
+                        <Label fx:id="temperatureLabel" text="20.0°C" 
+                               style="-fx-font-size: 16pt; -fx-font-weight: bold; -fx-text-fill: #2196F3; -fx-min-width: 80; -fx-alignment: center-right;" />
+                    </HBox>
+                </VBox>
+                
+                <!-- Air Quality Display -->
+                <VBox spacing="5">
+                    <Label text="Air Quality" style="-fx-font-size: 14pt; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Region fx:id="airQualityIndicator" 
+                                style="-fx-background-radius: 50%; -fx-min-width: 20; -fx-min-height: 20; -fx-max-width: 20; -fx-max-height: 20; -fx-background-color: #4CAF50;" />
+                        <Label fx:id="airQualityLabel" text="GOOD" 
+                               style="-fx-font-size: 14pt; -fx-font-weight: bold; -fx-text-fill: #4CAF50;" />
+                    </HBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+    
+    <!-- Center: Devices Container -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+            <VBox fx:id="devicesContainer" spacing="15" style="-fx-padding: 20;">
+                <!-- Device controls will be added dynamically here -->
+                <Label text="No devices in this room" style="-fx-font-size: 16pt; -fx-text-fill: #9E9E9E; -fx-padding: 40;" />
+            </VBox>
+        </ScrollPane>
+    </center>
+    
+</BorderPane>

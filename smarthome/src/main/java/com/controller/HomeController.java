@@ -20,7 +20,7 @@ public class HomeController {
     private Home home;
     private SecurityController securityController;
     private Time currentTime;
-    private float currentTemperature; //the atmospheric temperature
+    private float currentTemperature; // the atmospheric temperature
     private AirQuality airQuality; // outside air quality
     private Date currentDate;
 
@@ -48,11 +48,11 @@ public class HomeController {
         // 2. Initialize Ramadan Athan Times
         this.ramadanAthanTimes = new HashMap<>();
         // Fajr (Suhoor ends at Fajr, so notify 30 mins before for Suhoor)
-        ramadanAthanTimes.put("Suhoor", Time.valueOf("04:30:00")); 
+        ramadanAthanTimes.put("Suhoor", Time.valueOf("04:30:00"));
         // Maghrib (Iftar time)
-        ramadanAthanTimes.put("Iftar (Maghrib)", Time.valueOf("18:30:00")); 
+        ramadanAthanTimes.put("Iftar (Maghrib)", Time.valueOf("18:30:00"));
         // Isha (Taraweeh starts after Isha, 30 mins buffer)
-        ramadanAthanTimes.put("Taraweeh", Time.valueOf("20:45:00")); 
+        ramadanAthanTimes.put("Taraweeh", Time.valueOf("20:45:00"));
         // We can add the regular prayer times as well, if they are different in Ramadan
         ramadanAthanTimes.put("Fajr", Time.valueOf("05:00:00"));
         ramadanAthanTimes.put("Dhuhr", Time.valueOf("12:45:00"));
@@ -63,7 +63,7 @@ public class HomeController {
         System.out.println("Devices in " + home.getName() + ":");
         for (SmartDevice device : home.getAllDevices()) {
             System.out.println("  " + device + " ");
-            System.out.println(" " +  device.getStatus());
+            System.out.println(" " + device.getStatus());
         }
     }
 
@@ -185,7 +185,6 @@ public class HomeController {
         return securityController.getSystemStatus();
     }
 
-
     // Athan Notification by time
 
     public Time getCurrentTime() {
@@ -223,55 +222,115 @@ public class HomeController {
     public void setSecurityController(SecurityController securityController) {
         this.securityController = securityController;
     }
-    
 
-    public void changeAllroomsTemperature(double temperature){
-    for (Room room : home.getRooms()) {
-            room.setTemperature(temperature);       
-        }
-        
+    public Home getHome() {
+        return home;
     }
 
-    public void AthanNotification(){
+    public void changeAllroomsTemperature(double temperature) {
+        for (Room room : home.getRooms()) {
+            room.setTemperature(temperature);
+        }
+
+    }
+
+    // Track notified events to prevent spamming
+    private java.util.Set<String> notifiedEvents = new java.util.HashSet<>();
+    private int lastDayOfYear = -1;
+
+    /**
+     * Checks for scheduled events based on the simulated time.
+     * Should be called periodically (e.g. every tick or every second).
+     */
+    public void checkScheduledEvents(java.time.LocalDateTime simulatedTime) {
+        // Update internal current time
+        this.currentTime = Time.valueOf(simulatedTime.toLocalTime());
+        this.currentDate = java.sql.Date.valueOf(simulatedTime.toLocalDate());
+
+        // Check if day changed to reset notified events
+        int currentDay = simulatedTime.getDayOfYear();
+        if (currentDay != lastDayOfYear) {
+            notifiedEvents.clear();
+            lastDayOfYear = currentDay;
+            System.out.println("New day: " + simulatedTime.toLocalDate() + ". Resetting scheduled events.");
+        }
+
+        // Check Athan times
+        AthanNotification();
+
+        // Update Night Mode
+        setIsNight();
+    }
+
+    public void AthanNotification() {
         if (this.currentTime == null) {
-            System.err.println("Athan Notification Error: Current time is not set.");
             return;
         }
 
         Map<String, Time> currentSchedule;
         String modeDescriptor = "";
-        
+
         if (isRamadanModeActive) {
             currentSchedule = ramadanAthanTimes;
-            modeDescriptor = " (Ramadan Schedule)";
+            modeDescriptor = " (Ramadan)";
         } else {
             currentSchedule = athanTimes;
         }
 
-        long currentTimeMillis = this.currentTime.getTime();
+        // long currentTimeMillis = this.currentTime.getTime(); // Original line, no
+        // longer needed
+        java.time.LocalTime currentLocalTime = this.currentTime.toLocalTime();
 
         for (Map.Entry<String, Time> entry : currentSchedule.entrySet()) {
             String athanName = entry.getKey();
             Time athanTime = entry.getValue();
+            java.time.LocalTime scheduledLocalTime = athanTime.toLocalTime();
 
-            long athanTimeMillis = athanTime.getTime();
+            // Create a unique key for this event today
+            String eventKey = athanName + "-" + lastDayOfYear;
 
-            // Check if current time is within 1 minute of the scheduled time
-            if (Math.abs(currentTimeMillis - athanTimeMillis) <= ONE_MINUTE_IN_MILLIS) {
+            if (notifiedEvents.contains(eventKey)) {
+                continue; // Already notified today
+            }
+
+            // long athanTimeMillis = athanTime.getTime(); // Original line, no longer
+            // needed
+
+            // Check if current time is AFTER or EQUAL to scheduled time
+            // And within a reasonable window (e.g. 15 minutes) to ensure we don't miss it
+            // at high speeds
+            // but also don't trigger it hours late if we just started the app
+            if ((currentLocalTime.equals(scheduledLocalTime) || currentLocalTime.isAfter(scheduledLocalTime)) &&
+                    currentLocalTime.isBefore(scheduledLocalTime.plusMinutes(15))) {
+
+                String message = "Time for " + athanName + modeDescriptor + "!";
+                String detail = "It is now "
+                        + currentLocalTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+
+                // Send Toast Notification
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Prayer Time",
+                        message + "\n" + detail,
+                        com.ui.models.NotificationType.INFO);
+
                 System.out.println("----------------------------------------------");
-                System.out.println("🔔 **Notification: Time for " + athanName + modeDescriptor + "!**");
-                System.out.println("Current Time: " + this.currentTime.toString() + " | Scheduled Time: " + athanTime.toString());
-                
+                System.out.println("🔔 **Notification: " + message + "**");
+                System.out.println(
+                        "Current Time: " + this.currentTime.toString() + " | Scheduled: " + athanTime.toString());
+
                 // Add specific actions based on the Ramadan event
                 if (isRamadanModeActive) {
                     performRamadanAction(athanName);
                 }
-                
+
                 System.out.println("----------------------------------------------");
+
+                // Mark as notified
+                notifiedEvents.add(eventKey);
             }
         }
     }
-    
+
     /**
      * Helper method to perform specific actions for Ramadan events.
      */
@@ -279,18 +338,26 @@ public class HomeController {
         switch (eventName) {
             case "Suhoor":
                 System.out.println("Wake-up lights activated. Preparing the kitchen devices.");
-                // Add logic to turn on specific lights or appliances
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Ramadan Routine",
+                        "Suhoor time! Wake-up lights activated.",
+                        com.ui.models.NotificationType.INFO);
                 break;
             case "Iftar (Maghrib)":
                 System.out.println("Iftar time! The fast has been broken. Turning on main room lights.");
-                // Add logic to turn on lights, maybe play a specific sound
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Ramadan Routine",
+                        "Iftar time! Turning on lights.",
+                        com.ui.models.NotificationType.INFO);
                 break;
             case "Taraweeh":
                 System.out.println("Taraweeh prayer starting soon. Setting home to Quiet Mode.");
-                // Add logic to set securityController.setQuietMode();
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Ramadan Routine",
+                        "Taraweeh starting. Quiet Mode set.",
+                        com.ui.models.NotificationType.INFO);
                 break;
             default:
-                // Standard prayer time action
                 break;
         }
     }
@@ -345,6 +412,51 @@ public class HomeController {
             this.isNight = false;
             System.out.println("Current hour (" + currentHour + "): Setting isNight to FALSE.");
         }
+    }
+
+    /**
+     * Updates energy and water consumption based on elapsed simulated time.
+     * 
+     * @param simulatedSecondsElapsed The number of simulated seconds that have
+     *                                passed.
+     */
+    public void updateConsumption(double simulatedSecondsElapsed) {
+        if (home == null)
+            return;
+
+        for (Room room : home.getRooms()) {
+            // 1. Update Energy Consumption
+            room.accumulateEnergyUsageSeconds((long) simulatedSecondsElapsed);
+
+            // 2. Update Water Consumption
+            double roomTotalWater = 0;
+            double roomCurrentWater = 0;
+
+            for (SmartDevice device : room.getDevices()) {
+                if (device instanceof com.devices.SmartFaucet) {
+                    com.devices.SmartFaucet faucet = (com.devices.SmartFaucet) device;
+                    // Track consumption for this time step (convert seconds to minutes)
+                    faucet.trackWaterConsumption(simulatedSecondsElapsed / 60.0);
+
+                    roomTotalWater += faucet.getTotalwaterConsumption();
+                    roomCurrentWater += faucet.getCurrentwaterConsumption();
+                }
+            }
+
+            // Update room water stats
+            // Only update if we found water consumers, otherwise keep existing (or 0)
+            // Actually, we should set it to the calculated sum to be accurate
+            if (room.getName().equals("Bathroom") || room.getName().equals("Kitchen")) {
+                room.setTotalwaterConsumption(roomTotalWater);
+                room.setCurrentwaterConsumption(roomCurrentWater);
+            }
+        }
+
+        // Update Home totals
+        home.setTotalEnergyConsumption();
+        home.setCurrentEnergyConsumption();
+        home.setTotalwaterConsumption();
+        home.setCurrentwaterConsumption();
     }
 
 }
