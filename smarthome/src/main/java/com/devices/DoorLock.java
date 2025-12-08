@@ -20,7 +20,7 @@ public class DoorLock extends SmartDevice implements Controllable, Schedulable, 
     private int autoLockDelay; // minutes
     private List<String> accessLog;
     private String schedulePattern;
-    private boolean isActive = false;
+    private boolean isOn;
     private java.time.LocalDateTime lastUpdated;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     // scheduling support
@@ -37,7 +37,7 @@ public class DoorLock extends SmartDevice implements Controllable, Schedulable, 
         this.autoLockDelay = 5; // 5 minutes default
         this.accessLog = new ArrayList<>();
         this.lastUpdated = java.time.LocalDateTime.now();
-        logAccess("System initialized - Door locked");
+        this.isOn = false;
     }
     
     @Override
@@ -52,7 +52,7 @@ public class DoorLock extends SmartDevice implements Controllable, Schedulable, 
     
     @Override
     public boolean isOn() {
-        return isLocked;
+        return isOn;
     }
     
     public void lock() {
@@ -70,7 +70,7 @@ public class DoorLock extends SmartDevice implements Controllable, Schedulable, 
             logAccess("Door unlocked");
             
             // If system is armed and door is unlocked, might be a breach
-            if (isActive) {
+            if (isOn) {
                 logEvent("Door unlocked while system active - potential breach!");
             }
         }

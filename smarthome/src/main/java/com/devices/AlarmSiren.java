@@ -14,8 +14,7 @@ public class AlarmSiren extends SmartDevice implements Controllable, EnergyConsu
     private int durationSeconds;
     private double standbyConsumption = 0.1;
     private double activeConsumption = 50.0;
-    private boolean isActive;
-    private boolean energySavingMode = false;
+    private boolean isOn;
     private java.time.LocalDateTime lastUpdated;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public AlarmSiren(String deviceId, String name, EnergyMode energyMode) {
@@ -23,9 +22,11 @@ public class AlarmSiren extends SmartDevice implements Controllable, EnergyConsu
         this.volume = 8;
         this.isSounding = false;
         this.durationSeconds = 30;
-        this.energyMode = energyMode;
         this.lastUpdated = LocalDateTime.now();
+        this.isOn = false;
     }
+
+
     
     @Override
     public void turnOn() {
@@ -33,7 +34,7 @@ public class AlarmSiren extends SmartDevice implements Controllable, EnergyConsu
             System.err.println("Alarm is already sounding");
             return;
         }
-        this.isActive = true;
+        this.isOn = true;
         this.isSounding = true;
         updateTimestamp();
         startAlarmSequence();
@@ -42,14 +43,14 @@ public class AlarmSiren extends SmartDevice implements Controllable, EnergyConsu
     @Override
     public void turnOff() {
         this.isSounding = false;
-        this.isActive = false;
+        this.isOn = false;
         updateTimestamp();
         stopAlarmSequence();
     }
     
     @Override
     public boolean isOn() {
-        return isSounding;
+        return isOn;
     }
     
     public void triggerAlarm() throws InvalidOperationException {
@@ -94,13 +95,13 @@ public class AlarmSiren extends SmartDevice implements Controllable, EnergyConsu
     
     public double calculateEnergyConsumption() {
         double baseConsumption = isSounding ? activeConsumption : standbyConsumption;
-        return energySavingMode ? baseConsumption * 0.8 : baseConsumption;
+        return energyMode == EnergyMode.ECO ? baseConsumption * 0.8 : baseConsumption;
     }
-    public double getEnergyConsumptionRate() {
+    public double getPowerConsumption() {
         return calculateEnergyConsumption();
     }
     public void setEnergySavingMode(boolean enable) {
-        this.energySavingMode = enable;
+        this.energyMode = EnergyMode.ECO;
         if (enable && volume > 6) {
             volume = 6; // Reduce volume in energy saving mode
         }
@@ -148,12 +149,12 @@ public class AlarmSiren extends SmartDevice implements Controllable, EnergyConsu
         }
     }
 
-    @Override
+
     public boolean isControllable() {
         return true;
     }
 
-    @Override
+
     public double getEnergyConsumption() {
         return calculateEnergyConsumption();
     }
@@ -161,4 +162,6 @@ public class AlarmSiren extends SmartDevice implements Controllable, EnergyConsu
     private void updateTimestamp() {
         this.lastUpdated = LocalDateTime.now();
     }
+
+
 }

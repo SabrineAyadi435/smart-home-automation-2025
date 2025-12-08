@@ -14,11 +14,10 @@ public class DoorWindowSensor extends SmartDevice implements Controllable, Energ
     private boolean isOpen;
     private String location;
     private int openCount = 0;
-    private boolean isActive = false;
+    private boolean isOn;
     private java.time.LocalDateTime lastUpdated;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     // energy
-    private boolean energySavingMode = false;
     private double standbyConsumption = 0.01;
     private double activeConsumption = 0.5;
     
@@ -27,27 +26,28 @@ public class DoorWindowSensor extends SmartDevice implements Controllable, Energ
         this.location = location;
         this.isOpen = false;
         this.lastUpdated = java.time.LocalDateTime.now();
+        this.isOn = false;
     }
     
     @Override
     public void turnOn() {
-        this.isActive = true;
+        this.isOn = true;
         updateTimestamp();
     }
     
     @Override
     public void turnOff() {
-        this.isActive = false;
+        this.isOn = false;
         updateTimestamp();
     }
     
     @Override
     public boolean isOn() {
-        return isActive;
+        return isOn;
     }
     
     public boolean checkStatus() throws SecurityBreachException {
-        if (!isActive) return isOpen;
+        if (!isOn) return isOpen;
         
         // Simulate status check - in real system, read from magnetic sensor
         Random rand = new Random();
@@ -60,7 +60,7 @@ public class DoorWindowSensor extends SmartDevice implements Controllable, Energ
             
             logEvent((isOpen ? "Opened" : "Closed"));
             
-            if (isOpen && isActive) {
+            if (isOpen && isOn) {
                 throw new SecurityBreachException(
                     "Door/Window opened in " + location, 
                     location
@@ -76,7 +76,7 @@ public class DoorWindowSensor extends SmartDevice implements Controllable, Energ
             openCount++;
             updateTimestamp();
             
-            if (isActive) {
+            if (isOn) {
                 throw new SecurityBreachException(
                     "Door/Window forced open in " + location, 
                     location
@@ -132,23 +132,26 @@ public class DoorWindowSensor extends SmartDevice implements Controllable, Energ
         }
     }
 
+
     @Override
     public boolean isControllable() {
         return true;
     }
 
+
     @Override
     public double getEnergyConsumption() {
         double base = isOpen ? activeConsumption : standbyConsumption;
-        return energySavingMode ? base * 0.8 : base;
+        return energyMode == EnergyMode.ECO ? base * 0.8 : base;
     }
 
     private void updateTimestamp() {
         this.lastUpdated = java.time.LocalDateTime.now();
     }
 
+    @Override
     public void setEnergyMode(EnergyMode mode) {
         super.setEnergyMode(mode);
-        this.energySavingMode = (mode == EnergyMode.ECO);
+        this.energyMode = mode;
     }
 }

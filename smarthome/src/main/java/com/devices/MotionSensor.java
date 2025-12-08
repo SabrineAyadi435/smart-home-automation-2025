@@ -18,19 +18,22 @@ public class MotionSensor extends SmartDevice implements Controllable, Schedulab
     private String schedulePattern;
     private int triggerCount = 0;
     private LocalDateTime lastTriggerTime;
-    private boolean isActive = false;
+    private boolean isOn = false;
     private java.time.LocalDateTime lastUpdated;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     // scheduling support
     private final java.util.Timer scheduler = new java.util.Timer(true);
     private final java.util.List<java.util.TimerTask> scheduledTasks = new java.util.ArrayList<>();
     
+    private final double powerConsumption = 10.0;
+
     public MotionSensor(String deviceId, String name, int detectionRange, EnergyMode energyMode) {
         super(deviceId, name, energyMode);
         this.detectionRange = detectionRange;
         this.sensitivity = 5;
         this.isTriggered = false;
         this.lastUpdated = LocalDateTime.now();
+        this.isOn = false;
     }
 
     // Backwards-compatible constructor (older code created MotionSensor without range)
@@ -40,20 +43,20 @@ public class MotionSensor extends SmartDevice implements Controllable, Schedulab
     
     @Override
     public void turnOn() {
-        this.isActive = true;
+        this.isOn = true;
         updateTimestamp();
     }
     
     @Override
     public void turnOff() {
-        this.isActive = false;
+        this.isOn = false;
         this.isTriggered = false;
         updateTimestamp();
     }
     
     @Override
     public boolean isOn() {
-        return isActive;
+        return isOn;
     }
     
     public void setSensitivity(int level) throws InvalidOperationException {
@@ -65,7 +68,7 @@ public class MotionSensor extends SmartDevice implements Controllable, Schedulab
     }
     
     public boolean checkMotion() throws SecurityBreachException {
-        if (!isActive) return false;
+        if (!isOn) return false;
         
         // Simulate motion detection - in real system, this would read from hardware
         Random rand = new Random();
@@ -79,7 +82,7 @@ public class MotionSensor extends SmartDevice implements Controllable, Schedulab
 
             logEvent("Motion detected! Sensitivity: " + sensitivity);
 
-            if (isActive) {
+            if (isOn) {
                 throw new SecurityBreachException(
                     "Motion detected in " + name,
                     "MotionSensor-" + deviceId
@@ -194,4 +197,14 @@ public class MotionSensor extends SmartDevice implements Controllable, Schedulab
     private void updateTimestamp() {
         this.lastUpdated = LocalDateTime.now();
     }
+
+    @Override
+    public double getEnergyConsumption() {
+        if (isOn) {
+            return powerConsumption;
+        }
+        return 0;
+    }
+
+
 }

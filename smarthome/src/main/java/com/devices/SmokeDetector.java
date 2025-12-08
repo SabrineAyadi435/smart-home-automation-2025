@@ -19,9 +19,8 @@ public class SmokeDetector extends SmartDevice implements Controllable, Schedula
     private double baseConsumption = 0.2;
     private double alarmConsumption = 2.0;
     private String schedulePattern;
-    private boolean energySavingMode = false;
     private LocalDateTime lastBatteryCheck;
-    private boolean isActive = false;
+    private boolean isOn;
     private java.time.LocalDateTime lastUpdated;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     // scheduling support
@@ -35,11 +34,12 @@ public class SmokeDetector extends SmartDevice implements Controllable, Schedula
         this.smokeDetected = false;
         this.batteryLevel = 100.0;
         this.lastBatteryCheck = LocalDateTime.now();
+        this.isOn = false;
     }
     
     @Override
     public void turnOn() {
-        this.isActive = true;
+        this.isOn = true;
         updateTimestamp();
     }
     
@@ -48,17 +48,17 @@ public class SmokeDetector extends SmartDevice implements Controllable, Schedula
             System.err.println("Cannot turn off while smoke is detected!");
             return;
         }
-        this.isActive = false;
+        this.isOn = false;
         updateTimestamp();
     }
     
     @Override
     public boolean isOn() {
-        return isActive;
+        return isOn;
     }
     
     public void detectSmoke(boolean smokePresent) throws SecurityBreachException {
-        if (!isActive) return;
+        if (!isOn) return;
         
         if (smokePresent && !smokeDetected) {
             smokeDetected = true;
@@ -96,19 +96,13 @@ public class SmokeDetector extends SmartDevice implements Controllable, Schedula
     
     public double calculateEnergyConsumption() {
         double consumption = smokeDetected ? alarmConsumption : baseConsumption;
-        return energySavingMode ? consumption * 0.6 : consumption;
+        return energyMode == EnergyMode.ECO ? consumption * 0.6 : energyMode == EnergyMode.HIGH ? consumption * 2 : consumption;
     }
     
     public double getEnergyConsumptionRate() {
         return calculateEnergyConsumption();
     }
     
-    public void setEnergySavingMode(boolean enable) {
-        this.energySavingMode = enable;
-        if (enable && sensitivity > 5) {
-            sensitivity = 5; // Reduce sensitivity in energy saving mode
-        }
-    }
     
     @Override
     public String getStatus() {
@@ -217,8 +211,10 @@ public class SmokeDetector extends SmartDevice implements Controllable, Schedula
     @Override
     public void setEnergyMode(EnergyMode mode) {
         super.setEnergyMode(mode);
-        this.energySavingMode = (mode == EnergyMode.ECO);
-        logEvent("Energy mode set to " + mode + " (energySaving=" + energySavingMode + ")");
+        this.energyMode = mode;
+        logEvent("Energy mode set to " + mode);
+
+        
     }
 
     private void updateTimestamp() {

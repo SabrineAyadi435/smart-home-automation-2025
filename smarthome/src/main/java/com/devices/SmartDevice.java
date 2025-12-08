@@ -1,12 +1,17 @@
 package com.devices;
 
 import com.enums.EnergyMode;
+import com.interfaces.EnergyConsumer;
+import com.room.Room;
 
-public abstract class SmartDevice {
+public abstract class SmartDevice implements EnergyConsumer {
     protected String deviceId;
     protected String name;
     protected boolean isOn;
     protected EnergyMode energyMode;
+    protected double powerConsumption;
+    protected Room room;
+    
     
     public SmartDevice(String deviceId, String name, EnergyMode energyMode) {
         this.deviceId = deviceId;
@@ -35,6 +40,7 @@ public abstract class SmartDevice {
         return energyMode;
     }
     
+    @Override
     public void setEnergyMode(EnergyMode mode) {
         this.energyMode = mode;
     }
@@ -43,4 +49,13 @@ public abstract class SmartDevice {
     public String toString() {
         return String.format("[%s] %s - %s", deviceId, name, getStatus());
     }
+
+    public void setRoom(Room room) {     // <-- ADDED
+        this.room = room;
+    }
+
+    public Room getRoom() {              // <-- ADDED
+        return room;
+    }
+
 }

@@ -60,7 +60,8 @@ public class SmartTV extends SmartDevice implements Controllable, EnergyConsumer
     
     @Override
     public double getEnergyConsumption() {
-        return isOn ? 15.0 : 0.5;
+        double base = isOn ? 15.0 : 0.0;
+        return energyMode == EnergyMode.ECO ? base * 0.8 : energyMode == EnergyMode.HIGH ? base * 2 : base;
     }
     
     @Override

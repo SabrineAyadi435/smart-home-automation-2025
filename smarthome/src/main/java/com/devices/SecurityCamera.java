@@ -13,14 +13,13 @@ import com.interfaces.Schedulable;
 
 public class SecurityCamera extends SmartDevice implements Controllable, Schedulable, EnergyConsumer {
     private boolean isRecording;
-    private boolean isActive = false;
+    private boolean isOn;
     private String resolution;
     private boolean nightVisionEnabled;
     private int fieldOfView;
     private double standbyConsumption = 0.5; // kWh
     private double recordingConsumption = 5.0; // kWh
     private String schedulePattern;
-    private boolean energySavingMode = false;
     private String liveFeedUrl;
     private java.time.LocalDateTime lastUpdated;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -37,15 +36,15 @@ public class SecurityCamera extends SmartDevice implements Controllable, Schedul
         this.isRecording = false;
         this.liveFeedUrl = "rtsp://camera-" + deviceId + "/live";
         this.lastUpdated = LocalDateTime.now();
+        this.isOn = false;
     }
 
     @Override
     public void turnOn() {
-        if (isActive && isRecording) {
+        if (isOn && isRecording) {
             System.err.println("Camera is already recording");
             return;
         }
-        this.isActive = true;
         this.isRecording = true;
         updateTimestamp();
         logEvent("Camera started recording");
@@ -53,19 +52,19 @@ public class SecurityCamera extends SmartDevice implements Controllable, Schedul
 
     @Override
     public void turnOff() {
-        if (!isActive) {
+        if (!isOn) {
             System.err.println("Camera is already off");
             return;
         }
         this.isRecording = false;
-        this.isActive = false;
+        this.isOn = false;
         updateTimestamp();
         logEvent("Camera stopped recording");
     }
 
     @Override
     public boolean isOn() {
-        return isActive && isRecording;
+        return isOn && isRecording;
     }
 
     public void toggleNightVision() {
@@ -92,10 +91,10 @@ public class SecurityCamera extends SmartDevice implements Controllable, Schedul
 
     public double calculateEnergyConsumption() {
         double baseConsumption = isRecording ? recordingConsumption : standbyConsumption;
-        return energySavingMode ? baseConsumption * 0.7 : baseConsumption;
+        return energyMode == EnergyMode.ECO ? baseConsumption * 0.7 : baseConsumption;
     }
 
-    @Override
+
     public double getEnergyConsumption() {
         return calculateEnergyConsumption();
     }
@@ -103,11 +102,11 @@ public class SecurityCamera extends SmartDevice implements Controllable, Schedul
     @Override
     public void setEnergyMode(EnergyMode mode) {
         super.setEnergyMode(mode);
-        this.energySavingMode = (mode == EnergyMode.ECO);
-        if (this.energySavingMode) {
+        this.energyMode = mode;
+        if (this.energyMode == EnergyMode.ECO) {
             resolution = "720p"; // Lower resolution in energy saving mode
         }
-        logEvent("Energy mode set to " + mode + " (energySaving=" + energySavingMode + ")");
+        logEvent("Energy mode set to " + mode + " (energySaving=" + energyMode + ")");
     }
 
     public void schedule(String schedulePattern) {
@@ -200,4 +199,8 @@ public class SecurityCamera extends SmartDevice implements Controllable, Schedul
         scheduledTasks.clear();
         logEvent("All scheduled tasks cancelled");
     }
+
+
+
+
 }

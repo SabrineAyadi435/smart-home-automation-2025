@@ -12,7 +12,7 @@ public class Speaker extends SmartDevice implements Controllable, EnergyConsumer
         super(deviceId, name, energyMode);
         this.volume = 50;
         this.playing = false;
-        this.energyMode = energyMode;
+        this.isOn = false;
     }
     
     @Override

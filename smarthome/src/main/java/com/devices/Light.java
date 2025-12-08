@@ -6,11 +6,12 @@ import com.interfaces.EnergyConsumer;
 
 public class Light extends SmartDevice implements Controllable, EnergyConsumer {
     private int brightness;
+    private final double powerConsumption = 10.0;
+
     
     public Light(String deviceId, String name, int brightness, EnergyMode energyMode) {
         super(deviceId, name, energyMode);
         this.brightness = brightness;
-;
     }
     
     @Override
@@ -54,8 +55,12 @@ public class Light extends SmartDevice implements Controllable, EnergyConsumer {
     
     @Override
     public double getEnergyConsumption() {
-        return isOn ? (brightness * 0.1) : 0.0;
+        return isOn ? (brightness * 0.1 * powerConsumption) : 0.0;
     }
+
+    // public double getPowerConsumption() {
+    //     return powerConsumption;
+    // }
     
 
 }

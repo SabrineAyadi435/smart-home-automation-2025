@@ -27,7 +27,8 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
     private final String qiblaDirection;
     private final String city;
 
-    private EnergyMode energyMode;
+    private double standbyConsumption = 0.5; // watts when idle
+    private double activeConsumption = 1.0; // watts when operating
 
     private CalendarService calendarService;
 
@@ -43,8 +44,6 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         this.weather = "Sunny";
         this.temperature = 22.0;
         this.city = YOUR_CITY;
-
-        this.energyMode = energyMode;
 
 
         // --- SIMPLIFICATION: Initialize with a default email, which will be changed later ---
@@ -268,7 +267,8 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
 
     @Override
     public double getEnergyConsumption() {
-        return isOn ? 8.0 : 0.5;
+        double base = isOn ? activeConsumption : standbyConsumption;
+        return energyMode == EnergyMode.HIGH ? base * 2 : energyMode == EnergyMode.ECO ? base / 2 : base;
     }
 
     @Override
