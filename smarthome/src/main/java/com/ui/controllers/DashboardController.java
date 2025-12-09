@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Main controller for the Smart Home Dashboard.
+ * Main controller for the Dashboard.
  * Manages navigation between different views and coordinates data flow between
  * UI and backend.
  */
@@ -225,7 +225,7 @@ public class DashboardController {
     /**
      * Sets the HomeController instance for backend operations.
      * 
-     * @param homeController The HomeController managing the smart home
+     * @param homeController The HomeController managing the
      */
     public void setHomeController(HomeController homeController) {
         this.homeController = homeController;
@@ -234,7 +234,7 @@ public class DashboardController {
 
         // Update status with home information
         if (homeController != null) {
-            updateStatus("Connected to Smart Home System");
+            updateStatus("Connected to  System");
 
             // Start automatic UI updates
             if (uiUpdater != null) {

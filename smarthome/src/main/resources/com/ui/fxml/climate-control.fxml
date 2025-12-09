@@ -24,7 +24,9 @@
                     prefWidth="300"/>
             <Label fx:id="masterTemperatureLabel" text="22.0 C" style="-fx-font-size: 14pt; -fx-font-weight: bold;" minWidth="60"/>
             <Button fx:id="applyMasterTempButton" text="Apply to All Rooms" onAction="#handleApplyMasterTemperature"
-                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8px 16px;"/>
+                    style="-fx-background-color: #85935E; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8px 16px;"/>
+            <Button text="🔄 Refresh" onAction="#refresh" 
+                    style="-fx-background-color: #85935E; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8px 16px;"/>
         </HBox>
         
         <HBox spacing="15" alignment="CENTER_LEFT">

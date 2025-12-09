@@ -14,8 +14,13 @@
    NAVIGATION MENU
    ============================================ */
 .navigation-menu {
-    -fx-background-color: #2c3e50;
+    -fx-background-color: #3E4B35;
+    /* Dark Olive */
     -fx-padding: 20 10;
+}
+
+.nav-logo {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 2);
 }
 
 .nav-button {
@@ -29,11 +34,13 @@
 }
 
 .nav-button:hover {
-    -fx-background-color: #34495e;
+    -fx-background-color: #4F5E45;
+    /* Lighter Olive */
 }
 
 .nav-button.active {
-    -fx-background-color: #3498db;
+    -fx-background-color: #85935E;
+    /* Sage Green */
     -fx-text-fill: white;
 }
 
@@ -62,7 +69,8 @@
 }
 
 .room-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.3), 12, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(133, 147, 94, 0.3), 12, 0, 0, 3);
+    /* Sage Green Glow */
     -fx-cursor: hand;
 }
 
@@ -70,7 +78,8 @@
    BUTTONS
    ============================================ */
 .button {
-    -fx-background-color: #3498db;
+    -fx-background-color: #85935E;
+    /* Sage Green */
     -fx-text-fill: white;
     -fx-font-size: 13px;
     -fx-padding: 8 16;
@@ -79,15 +88,18 @@
 }
 
 .button:hover {
-    -fx-background-color: #2980b9;
+    -fx-background-color: #6d7a4d;
+    /* Darker Sage */
 }
 
 .button:pressed {
-    -fx-background-color: #21618c;
+    -fx-background-color: #55603c;
+    /* Even Darker Sage */
 }
 
 .button-primary {
-    -fx-background-color: #3498db;
+    -fx-background-color: #85935E;
+    /* Sage Green */
     -fx-text-fill: white;
 }
 
@@ -131,7 +143,8 @@
 }
 
 .text-field:focused {
-    -fx-border-color: #3498db;
+    -fx-border-color: #85935E;
+    /* Sage Green */
     -fx-border-width: 2;
 }
 
@@ -163,7 +176,8 @@
 .label-value {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #3498db;
+    -fx-text-fill: #85935E;
+    /* Sage Green */
 }
 
 /* ============================================
@@ -174,11 +188,13 @@
 }
 
 .slider .thumb {
-    -fx-background-color: #3498db;
+    -fx-background-color: #85935E;
+    /* Sage Green */
 }
 
 .slider:hover .thumb {
-    -fx-background-color: #2980b9;
+    -fx-background-color: #6d7a4d;
+    /* Darker Sage */
 }
 
 /* ============================================
@@ -191,7 +207,8 @@
 }
 
 .table-view .column-header {
-    -fx-background-color: #34495e;
+    -fx-background-color: #3E4B35;
+    /* Dark Olive */
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-padding: 10;
@@ -206,7 +223,8 @@
 }
 
 .table-row-cell:selected {
-    -fx-background-color: #3498db;
+    -fx-background-color: #85935E;
+    /* Sage Green */
     -fx-text-fill: white;
 }
 
@@ -301,7 +319,8 @@
 }
 
 .dialog-pane .header-panel {
-    -fx-background-color: #3498db;
+    -fx-background-color: #85935E;
+    /* Sage Green */
     -fx-padding: 15;
 }
 

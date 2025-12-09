@@ -30,8 +30,8 @@
             <!-- Spacer to push button to the right -->
             <HBox HBox.hgrow="ALWAYS"/>
             
-            <Button fx:id="addRoomButton" text="+ Add Room" onAction="#addRoom"
-                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 10 20; -fx-background-radius: 4; -fx-cursor: hand;">
+            <Button fx:id="addRoomButton" text="+ Add Room" onAction="#addRoom" 
+                    style="-fx-background-color: #85935E; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 10 20; -fx-background-radius: 4; -fx-cursor: hand;">
             </Button>
         </HBox>
     </top>

@@ -8,6 +8,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
 <!--
   Main dashboard layout for the Smart Home Dashboard.
@@ -28,8 +30,18 @@
                 <Insets top="20" right="10" bottom="20" left="10"/>
             </padding>
             
+            <!-- Logo -->
+            <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" styleClass="nav-logo">
+               <image>
+                  <Image url="@../images/logo.jpg" />
+               </image>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </ImageView>
+
             <!-- Dashboard Title -->
-            <Label text="Smart Home" styleClass="nav-title" 
+            <Label text="Islamic        Smart Home" styleClass="nav-title" 
                    style="-fx-text-fill: white; -fx-font-size: 20pt; -fx-font-weight: bold; -fx-padding: 0 0 20 0;"/>
             
             <!-- Navigation Buttons -->
@@ -65,7 +77,7 @@
                     onAction="#refreshAllData" 
                     styleClass="nav-button"
                     prefWidth="180" prefHeight="40"
-                    style="-fx-background-color: #1976D2; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center; -fx-padding: 10 20; -fx-background-radius: 4;"/>
+                    style="-fx-background-color: #85935E; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center; -fx-padding: 10 20; -fx-background-radius: 4;"/>
         </VBox>
     </left>
     
@@ -78,7 +90,7 @@
                 <!-- Content will be dynamically loaded here -->
                 <VBox alignment="CENTER" spacing="20">
                     <Label text="Welcome to Smart Home Dashboard" 
-                           style="-fx-font-size: 32pt; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                           style="-fx-font-size: 32pt; -fx-font-weight: bold; -fx-text-fill: #85935E;"/>
                     <Label text="Select a view from the navigation menu" 
                            style="-fx-font-size: 16pt; -fx-text-fill: #757575;"/>
                 </VBox>
@@ -104,14 +116,14 @@
             <!-- Time Control Section -->
             <Label text="🕐" style="-fx-font-size: 14pt;"/>
             <Label fx:id="simulatedTimeLabel" text="2025-12-08 19:20:00" 
-                   style="-fx-font-size: 12pt; -fx-font-weight: bold; -fx-text-fill: #1976D2;"/>
+                   style="-fx-font-size: 12pt; -fx-font-weight: bold; -fx-text-fill: #85935E;"/>
             
             <Button fx:id="rewindBtn" text="◀◀" 
-                    style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #90CAF9; -fx-text-fill: white;"/>
+                    style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #A4B084; -fx-text-fill: white;"/>
             <Button fx:id="pausePlayBtn" text="▶" 
                     style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
             <Button fx:id="forwardBtn" text="▶▶" 
-                    style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #90CAF9; -fx-text-fill: white;"/>
+                    style="-fx-font-size: 10pt; -fx-padding: 4 8; -fx-background-color: #A4B084; -fx-text-fill: white;"/>
             
             <Label text="Speed:" style="-fx-font-size: 11pt;"/>
             <ComboBox fx:id="speedCombo" prefWidth="80" 

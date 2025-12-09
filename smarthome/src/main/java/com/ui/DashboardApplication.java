@@ -45,7 +45,7 @@ public class DashboardApplication extends Application {
         // scene.getStylesheets().add(getClass().getResource("/com/ui/css/main.css").toExternalForm());
 
         // Configure the primary stage
-        primaryStage.setTitle("Smart Home Dashboard - " + homeController.getSecurityController().getHomeState());
+        primaryStage.setTitle("Islamic Smart Home Dashboard - " + homeController.getSecurityController().getHomeState());
         primaryStage.setScene(scene);
 
         // Set minimum dimensions for usability

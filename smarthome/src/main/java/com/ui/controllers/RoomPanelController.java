@@ -35,6 +35,9 @@ public class RoomPanelController {
     private Label temperatureLabel;
 
     @FXML
+    private Label headerTemperatureLabel;
+
+    @FXML
     private Region airQualityIndicator;
 
     @FXML
@@ -190,8 +193,12 @@ public class RoomPanelController {
      * @param temperature The temperature value to display
      */
     private void updateTemperatureLabel(double temperature) {
+        String tempText = String.format("%.1f°C", temperature);
         if (temperatureLabel != null) {
-            temperatureLabel.setText(String.format("%.1f°C", temperature));
+            temperatureLabel.setText(tempText);
+        }
+        if (headerTemperatureLabel != null) {
+            headerTemperatureLabel.setText(tempText);
         }
     }
 

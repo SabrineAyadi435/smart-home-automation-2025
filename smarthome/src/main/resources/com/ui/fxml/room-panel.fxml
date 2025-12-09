@@ -13,21 +13,33 @@
     <top>
         <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 20;">
             <HBox spacing="15" alignment="CENTER_LEFT">
-                <Button fx:id="backButton" text="← Back" onAction="#handleBack"
-                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;">
+                <Button text="← Back" onAction="#handleBack"
+                        style="-fx-background-color: #85935E; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;">
                 </Button>
                 
-                <Label fx:id="roomNameLabel" text="Room Name" style="-fx-font-size: 28pt; -fx-font-weight: bold; -fx-text-fill: #2196F3;">
+                <Label fx:id="roomNameLabel" text="Room Name" style="-fx-font-size: 28pt; -fx-font-weight: bold; -fx-text-fill: #85935E;">
                     <font>
                         <Font name="System Bold" size="28.0" />
                     </font>
+                    <HBox.margin>
+                        <Insets left="20"/>
+                    </HBox.margin>
                 </Label>
                 
                 <Region HBox.hgrow="ALWAYS" />
                 
-                <Button fx:id="addDeviceButton" text="+ Add Device" onAction="#handleAddDevice"
-                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;">
-                </Button>
+                <!-- Room Stats Summary -->
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+                    <HBox spacing="5" alignment="CENTER">
+                        <Label text="🌡️" style="-fx-font-size: 16pt;" />
+                        <Label fx:id="headerTemperatureLabel" text="--°C"
+                               style="-fx-font-size: 16pt; -fx-font-weight: bold; -fx-text-fill: #85935E; -fx-min-width: 80; -fx-alignment: center-right;" />
+                    </HBox>
+                    
+                    <Button fx:id="addDeviceButton" text="+ Add Device" onAction="#handleAddDevice"
+                            style="-fx-background-color: #85935E; -fx-text-fill: white; -fx-font-size: 14pt; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;">
+                    </Button>
+                </HBox>
             </HBox>
             
             <!-- Room Controls: Temperature and Air Quality -->
@@ -43,7 +55,7 @@
                                 style="-fx-cursor: hand;" />
                         <Label text="30°C" style="-fx-font-size: 12pt; -fx-text-fill: #757575;" />
                         <Label fx:id="temperatureLabel" text="20.0°C" 
-                               style="-fx-font-size: 16pt; -fx-font-weight: bold; -fx-text-fill: #2196F3; -fx-min-width: 80; -fx-alignment: center-right;" />
+                               style="-fx-font-size: 16pt; -fx-font-weight: bold; -fx-text-fill: #85935E; -fx-min-width: 80; -fx-alignment: center-right;" />
                     </HBox>
                 </VBox>
                 

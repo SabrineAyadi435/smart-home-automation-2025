@@ -29,8 +29,8 @@
                     style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
             <Button fx:id="disarmButton" text="✓ Disarm System" onAction="#handleDisarmSystem"
                     style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
-            <Button fx:id="nightModeButton" text="🌙 Night Mode" onAction="#handleNightMode"
-                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
+            <Button text="🌙 Night Mode" onAction="#handleNightMode" 
+                    style="-fx-background-color: #85935E; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
             <Button fx:id="awayModeButton" text="🏠 Away Mode" onAction="#handleAwayMode"
                     style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 10px 20px;"/>
         </HBox>
