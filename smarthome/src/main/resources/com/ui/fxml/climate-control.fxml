@@ -34,6 +34,20 @@
             <Label fx:id="atmosphericTempLabel" text="-- C" style="-fx-font-size: 14pt; -fx-font-weight: bold; -fx-text-fill: #666;"/>
         </HBox>
     </VBox>
+
+    <!-- Quick Actions -->
+    <VBox spacing="10" styleClass="control-section" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 8px;">
+        <Label text="Quick Actions" styleClass="section-title" style="-fx-font-size: 16pt; -fx-font-weight: bold;"/>
+        
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <Button text="💨 Purify Rooms" onAction="#handlePurifyRooms"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8px 16px;"/>
+            <Button text="💧 Wudu Time" onAction="#handleWuduTime"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8px 16px;"/>
+            <Button text="🕌 Prepare for Salat" onAction="#handlePrepareSalat"
+                    style="-fx-background-color: #FFC107; -fx-text-fill: black; -fx-font-size: 12pt; -fx-padding: 8px 16px;"/>
+        </HBox>
+    </VBox>
     
     <!-- Room Climate Controls -->
     <VBox spacing="15" styleClass="control-section" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 8px;">

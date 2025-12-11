@@ -382,3 +382,16 @@
     -fx-text-fill: #7f8c8d;
     -fx-font-size: 12px;
 }
+
+/* ============================================
+   HOME VIEW DYNAMIC BACKGROUNDS
+   ============================================ */
+.home-view-day {
+    -fx-background-color: #E1F5FE;
+    /* Light Blue */
+}
+
+.home-view-night {
+    -fx-background-color: #263238;
+    /* Dark Blue/Grey */
+}

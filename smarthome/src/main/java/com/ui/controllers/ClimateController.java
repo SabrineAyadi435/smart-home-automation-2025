@@ -287,6 +287,115 @@ public class ClimateController {
     }
 
     /**
+     * Handles the Purify Rooms button click.
+     * Sets air quality to GOOD for all rooms.
+     */
+    @FXML
+    public void handlePurifyRooms() {
+        if (home == null)
+            return;
+
+        System.out.println("💨 Purifying all rooms...");
+        for (Room room : home.getRooms()) {
+            room.setAirQuality(AirQuality.GOOD);
+        }
+
+        // Show notification
+        com.ui.utils.NotificationManager.getInstance().addNotification(
+                "Air Purification",
+                "All rooms are being purified. Air quality set to GOOD.",
+                com.ui.models.NotificationType.SUCCESS);
+
+        // Refresh UI
+        loadRoomClimateControls();
+    }
+
+    /**
+     * Handles the Wudu Time button click.
+     * Warms up the bathroom for ablution.
+     */
+    @FXML
+    public void handleWuduTime() {
+        if (home == null)
+            return;
+
+        Room bathroom = home.getRooms().stream()
+                .filter(r -> r.getName().equalsIgnoreCase("Bathroom"))
+                .findFirst()
+                .orElse(null);
+
+        if (bathroom != null) {
+            System.out.println("💧 Wudu Time activated for Bathroom");
+            updateRoomTemperature(bathroom, 26.0); // Warm temperature
+
+            // Show notification
+            com.ui.utils.NotificationManager.getInstance().addNotification(
+                    "Wudu Time",
+                    "Bathroom is warming up for Wudu (26.0°C).",
+                    com.ui.models.NotificationType.INFO);
+
+            // Refresh UI to show new temp
+            loadRoomClimateControls();
+        } else {
+            System.err.println("Bathroom not found!");
+            com.ui.utils.NotificationManager.getInstance().addNotification(
+                    "Error",
+                    "Bathroom not found for Wudu Time.",
+                    com.ui.models.NotificationType.ALERT);
+        }
+    }
+
+    /**
+     * Handles the Prepare for Salat button click.
+     * Prepares the Prayer Room (warm up and lights on).
+     */
+    @FXML
+    public void handlePrepareSalat() {
+        if (home == null)
+            return;
+
+        Room prayerRoom = home.getRooms().stream()
+                .filter(r -> r.getName().equalsIgnoreCase("Prayer Room"))
+                .findFirst()
+                .orElse(null);
+
+        if (prayerRoom != null) {
+            System.out.println("🕌 Preparing Prayer Room for Salat");
+
+            // 1. Set Temperature
+            updateRoomTemperature(prayerRoom, 23.0); // Comfortable temp
+
+            // 2. Turn on Lights
+            int lightsTurnedOn = 0;
+            for (com.devices.SmartDevice device : prayerRoom.getDevices()) {
+                if (device instanceof com.devices.Light) {
+                    try {
+                        device.turnOn();
+                        lightsTurnedOn++;
+                    } catch (Exception e) {
+                        System.err.println("Failed to turn on light: " + device.getName());
+                    }
+                }
+            }
+
+            // Show notification
+            com.ui.utils.NotificationManager.getInstance().addNotification(
+                    "Prepare for Salat",
+                    "Prayer Room prepared: Temp set to 23.0°C, " + lightsTurnedOn + " lights turned on.",
+                    com.ui.models.NotificationType.SUCCESS);
+
+            // Refresh UI
+            loadRoomClimateControls();
+        } else {
+            System.err.println("Prayer Room not found!");
+            com.ui.utils.NotificationManager.getInstance().addNotification(
+                    "Error",
+                    "Prayer Room not found. Please add a Prayer Room first.",
+                    com.ui.models.NotificationType.ALERT);
+        }
+    }
+
+    /**
      * Refreshes all climate data.
      */
     public void refresh() {

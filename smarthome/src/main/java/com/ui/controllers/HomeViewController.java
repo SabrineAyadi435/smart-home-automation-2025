@@ -57,6 +57,56 @@ public class HomeViewController {
      */
     public void setDashboardController(DashboardController dashboardController) {
         this.dashboardController = dashboardController;
+
+        // Subscribe to time updates for dynamic background
+        com.utils.TimeSimulator.getInstance().simulatedTimeProperty().addListener((obs, oldVal, newVal) -> {
+            javafx.application.Platform.runLater(() -> updateTime(newVal));
+        });
+
+        // Initial update
+        updateTime(com.utils.TimeSimulator.getInstance().now());
+    }
+
+    /**
+     * Updates the view based on the current time (Day/Night cycle).
+     * Day: 06:00 - 18:00
+     * Night: 18:00 - 06:00
+     */
+    private void updateTime(java.time.LocalDateTime time) {
+        if (floorPlanCanvas == null || floorPlanCanvas.getScene() == null)
+            return;
+
+        int hour = time.getHour();
+        boolean isNight = hour < 6 || hour >= 18;
+
+        // Get the main scroll pane content (VBox) which holds the background
+        if (floorPlanCanvas.getParent() instanceof javafx.scene.layout.VBox) {
+            javafx.scene.layout.VBox container = (javafx.scene.layout.VBox) floorPlanCanvas.getParent();
+
+            // Remove existing theme classes
+            container.getStyleClass().removeAll("home-view-day", "home-view-night");
+
+            // Add appropriate class
+            if (isNight) {
+                if (!container.getStyleClass().contains("home-view-night")) {
+                    container.getStyleClass().add("home-view-night");
+                    System.out.println("Switched to NIGHT mode (Hour: " + hour + ")");
+                }
+            } else {
+                if (!container.getStyleClass().contains("home-view-day")) {
+                    container.getStyleClass().add("home-view-day");
+                    System.out.println("Switched to DAY mode (Hour: " + hour + ")");
+                }
+            }
+        } else {
+            System.err.println("Error: floorPlanCanvas parent is not a VBox, cannot apply background style.");
+        }
+
+        // Update Sun/Moon visibility
+        if (sunShape != null)
+            sunShape.setVisible(!isNight);
+        if (moonShape != null)
+            moonShape.setVisible(isNight);
     }
 
     @FXML
@@ -66,8 +116,12 @@ public class HomeViewController {
     @FXML
     private javafx.scene.layout.StackPane roomSlot4; // Bathroom/Entrance
 
+    private javafx.scene.shape.Circle sunShape;
+    private javafx.scene.shape.Circle moonShape;
+
     /**
-     * Loads all rooms from the home and displays them in the visual floor plan.
+     * Loads all rooms from the home and displays them in the dynamic visual
+     * floor plan.
      */
     public void loadRooms() {
         if (homeController == null) {
@@ -77,6 +131,9 @@ public class HomeViewController {
 
         // Clear existing content
         floorPlanCanvas.getChildren().clear();
+
+        // Draw Sky Elements (Sun/Moon)
+        drawSkyElements();
 
         // Get all rooms from the home
         List<Room> rooms = homeController.getHome().getRooms();
@@ -97,6 +154,26 @@ public class HomeViewController {
         int rows = (int) Math.ceil((double) roomCount / cols);
 
         drawDynamicHouse(rooms, cols, rows);
+    }
+
+    /**
+     * Draws the Sun and Moon elements.
+     */
+    private void drawSkyElements() {
+        // Sun - Top Right
+        sunShape = new javafx.scene.shape.Circle(750, 80, 40);
+        sunShape.setFill(javafx.scene.paint.Color.web("#FFEB3B")); // Yellow
+        sunShape.setEffect(new javafx.scene.effect.DropShadow(20, javafx.scene.paint.Color.web("#FFC107"))); // Glow
+
+        // Moon - Top Right (same position)
+        moonShape = new javafx.scene.shape.Circle(750, 80, 35);
+        moonShape.setFill(javafx.scene.paint.Color.web("#F5F5F5")); // White/Grey
+        moonShape.setEffect(new javafx.scene.effect.DropShadow(15, javafx.scene.paint.Color.WHITE)); // Glow
+
+        // Add to canvas
+        floorPlanCanvas.getChildren().addAll(sunShape, moonShape);
+
+        // Initial visibility will be set by updateTime
     }
 
     private void drawDynamicHouse(List<Room> rooms, int cols, int rows) {

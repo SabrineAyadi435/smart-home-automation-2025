@@ -38,9 +38,9 @@
     
     <!-- Center content with visual floor plan -->
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: #E8F5E9; -fx-background: #E8F5E9;">
+        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: transparent; -fx-background-color: transparent;">
             <content>
-                <javafx.scene.layout.VBox alignment="TOP_CENTER" spacing="20" style="-fx-background-color: #E8F5E9; -fx-padding: 20;">
+                <javafx.scene.layout.VBox fx:id="homeContentBox" alignment="TOP_CENTER" spacing="20" style="-fx-padding: 20;">
                     <children>
                         <AnchorPane fx:id="floorPlanCanvas" prefWidth="850" prefHeight="650" />
                     </children>

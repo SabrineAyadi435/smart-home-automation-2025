@@ -45,7 +45,8 @@ public class DashboardApplication extends Application {
         // scene.getStylesheets().add(getClass().getResource("/com/ui/css/main.css").toExternalForm());
 
         // Configure the primary stage
-        primaryStage.setTitle("Islamic Smart Home Dashboard - " + homeController.getSecurityController().getHomeState());
+        primaryStage
+                .setTitle("Islamic Smart Home Dashboard - " + homeController.getSecurityController().getHomeState());
         primaryStage.setScene(scene);
 
         // Set minimum dimensions for usability
@@ -175,6 +176,24 @@ public class DashboardApplication extends Application {
         bathroom.addDevice(airSensor);
 
         home.addRoom(bathroom);
+
+        // Create Prayer Room with devices
+        Room prayerRoom = new Room("Prayer Room");
+        prayerRoom.setTemperature(21.0);
+        prayerRoom.setAirQuality(AirQuality.GOOD);
+
+        Light prayerLight = new Light("light-006", "Prayer Room Light", 80, EnergyMode.NORMAL);
+        prayerLight.setColor("#FFF8E1"); // Warm white
+        prayerRoom.addDevice(prayerLight);
+
+        AC prayerAC = new AC("ac-003", "Prayer Room AC", 21.0);
+        prayerAC.setFanSpeed("LOW");
+        prayerRoom.addDevice(prayerAC);
+
+        Speaker prayerSpeaker = new Speaker("speaker-002", "Prayer Room Speaker", EnergyMode.NORMAL);
+        prayerRoom.addDevice(prayerSpeaker);
+
+        home.addRoom(prayerRoom);
 
         // Create HomeController and add security devices
         HomeController controller = new HomeController(home);
