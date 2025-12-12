@@ -47,6 +47,12 @@ public class DeviceControlFactory {
             return createSmartMirrorControl((SmartMirror) device, room);
         } else if (device instanceof AlarmSiren) {
             return createAlarmSirenControl((AlarmSiren) device, room);
+        } else if (device instanceof SmartMicrowave) {
+            return createSmartMicrowaveControl((SmartMicrowave) device);
+        } else if (device instanceof SmartToaster) {
+            return createSmartToasterControl((SmartToaster) device);
+        } else if (device instanceof SmartCooker) {
+            return createSmartCookerControl((SmartCooker) device);
         } else if (device instanceof MotionSensor || device instanceof DoorWindowSensor ||
                 device instanceof SmokeDetector || device instanceof AirQualitySensor) {
             return createSensorControl(device);
@@ -86,6 +92,12 @@ public class DeviceControlFactory {
             return createSmartMirrorControl((SmartMirror) device);
         } else if (device instanceof AlarmSiren) {
             return createAlarmSirenControl((AlarmSiren) device);
+        } else if (device instanceof SmartMicrowave) {
+            return createSmartMicrowaveControl((SmartMicrowave) device);
+        } else if (device instanceof SmartToaster) {
+            return createSmartToasterControl((SmartToaster) device);
+        } else if (device instanceof SmartCooker) {
+            return createSmartCookerControl((SmartCooker) device);
         } else if (device instanceof MotionSensor || device instanceof DoorWindowSensor ||
                 device instanceof SmokeDetector || device instanceof AirQualitySensor) {
             return createSensorControl(device);
@@ -1032,6 +1044,319 @@ public class DeviceControlFactory {
         statusLabel.setStyle("-fx-font-size: 10pt; -fx-text-fill: #666;");
 
         container.getChildren().addAll(header, statusBox, controlBox, statusLabel);
+        return container;
+    }
+
+    /**
+     * Creates control panel for SmartMicrowave devices
+     */
+    private static Node createSmartMicrowaveControl(SmartMicrowave microwave) {
+        VBox container = new VBox(10);
+        container.setPadding(new Insets(10));
+        container.setStyle("-fx-background-color: white; -fx-background-radius: 8px; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);");
+
+        // Header
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        Label nameLabel = new Label("🔲 " + microwave.getName());
+        nameLabel.setStyle("-fx-font-size: 14pt; -fx-font-weight: bold;");
+
+        ToggleButton toggleButton = new ToggleButton(microwave.isOn() ? "ON" : "OFF");
+        toggleButton.setSelected(microwave.isOn());
+        updateToggleStyle(toggleButton);
+        toggleButton.setOnAction(e -> {
+            if (toggleButton.isSelected()) {
+                microwave.turnOn();
+                toggleButton.setText("ON");
+            } else {
+                microwave.turnOff();
+                toggleButton.setText("OFF");
+            }
+            updateToggleStyle(toggleButton);
+        });
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        header.getChildren().addAll(nameLabel, spacer, toggleButton);
+
+        // Power level control
+        HBox powerBox = new HBox(10);
+        powerBox.setAlignment(Pos.CENTER_LEFT);
+        Label powerLabel = new Label("Power Level:");
+        Slider powerSlider = new Slider(1, 10, microwave.getPowerLevel());
+        powerSlider.setShowTickLabels(true);
+        powerSlider.setShowTickMarks(true);
+        powerSlider.setMajorTickUnit(1);
+        powerSlider.setMinorTickCount(0);
+        powerSlider.setSnapToTicks(true);
+        powerSlider.setPrefWidth(150);
+        Label powerValue = new Label(microwave.getPowerLevel() + "/10");
+        powerValue.setMinWidth(40);
+
+        powerSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int power = newVal.intValue();
+            microwave.setPowerLevel(power);
+            powerValue.setText(power + "/10");
+        });
+
+        powerBox.getChildren().addAll(powerLabel, powerSlider, powerValue);
+
+        // Timer control
+        HBox timerBox = new HBox(10);
+        timerBox.setAlignment(Pos.CENTER_LEFT);
+        Label timerLabel = new Label("Timer (sec):");
+        Spinner<Integer> timerSpinner = new Spinner<>(0, 600, microwave.getTimerSeconds(), 30);
+        timerSpinner.setEditable(true);
+        timerSpinner.setPrefWidth(100);
+        timerSpinner.valueProperty().addListener((obs, oldVal, newVal) -> {
+            microwave.setTimer(newVal);
+        });
+
+        timerBox.getChildren().addAll(timerLabel, timerSpinner);
+
+        // Cooking control
+        HBox cookingBox = new HBox(10);
+        cookingBox.setAlignment(Pos.CENTER);
+        Circle cookingIndicator = new Circle(10);
+        cookingIndicator.setFill(microwave.isCooking() ? Color.ORANGE : Color.GRAY);
+        Label cookingLabel = new Label(microwave.isCooking() ? "🔥 Cooking..." : "Ready");
+        cookingLabel.setStyle("-fx-font-size: 12pt;");
+
+        Button cookButton = new Button(microwave.isCooking() ? "⏹ Stop" : "▶ Start Cooking");
+        cookButton.setStyle(
+                "-fx-background-color: #FF5722; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8 16;");
+        cookButton.setOnAction(e -> {
+            if (microwave.isCooking()) {
+                microwave.stopCooking();
+                cookButton.setText("▶ Start Cooking");
+                cookingIndicator.setFill(Color.GRAY);
+                cookingLabel.setText("Ready");
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Microwave", microwave.getName() + " stopped.", com.ui.models.NotificationType.INFO);
+            } else {
+                microwave.startCooking();
+                cookButton.setText("⏹ Stop");
+                cookingIndicator.setFill(Color.ORANGE);
+                cookingLabel.setText("🔥 Cooking...");
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Microwave", microwave.getName() + " cooking at power " + microwave.getPowerLevel(),
+                        com.ui.models.NotificationType.SUCCESS);
+            }
+        });
+
+        cookingBox.getChildren().addAll(cookingIndicator, cookingLabel, cookButton);
+
+        // Status label
+        Label statusLabel = new Label("Status: " + microwave.getStatus());
+        statusLabel.setStyle("-fx-font-size: 10pt; -fx-text-fill: #666;");
+
+        container.getChildren().addAll(header, powerBox, timerBox, cookingBox, statusLabel);
+        return container;
+    }
+
+    /**
+     * Creates control panel for SmartToaster devices
+     */
+    private static Node createSmartToasterControl(SmartToaster toaster) {
+        VBox container = new VBox(10);
+        container.setPadding(new Insets(10));
+        container.setStyle("-fx-background-color: white; -fx-background-radius: 8px; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);");
+
+        // Header
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        Label nameLabel = new Label("🍞 " + toaster.getName());
+        nameLabel.setStyle("-fx-font-size: 14pt; -fx-font-weight: bold;");
+
+        ToggleButton toggleButton = new ToggleButton(toaster.isOn() ? "ON" : "OFF");
+        toggleButton.setSelected(toaster.isOn());
+        updateToggleStyle(toggleButton);
+        toggleButton.setOnAction(e -> {
+            if (toggleButton.isSelected()) {
+                toaster.turnOn();
+                toggleButton.setText("ON");
+            } else {
+                toaster.turnOff();
+                toggleButton.setText("OFF");
+            }
+            updateToggleStyle(toggleButton);
+        });
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        header.getChildren().addAll(nameLabel, spacer, toggleButton);
+
+        // Browning level control
+        HBox browningBox = new HBox(10);
+        browningBox.setAlignment(Pos.CENTER_LEFT);
+        Label browningLabel = new Label("Browning:");
+        Slider browningSlider = new Slider(1, 7, toaster.getBrowningLevel());
+        browningSlider.setShowTickLabels(true);
+        browningSlider.setShowTickMarks(true);
+        browningSlider.setMajorTickUnit(1);
+        browningSlider.setMinorTickCount(0);
+        browningSlider.setSnapToTicks(true);
+        browningSlider.setPrefWidth(150);
+        Label browningValue = new Label(toaster.getBrowningLevel() + "/7");
+        browningValue.setMinWidth(40);
+
+        browningSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int level = newVal.intValue();
+            toaster.setBrowningLevel(level);
+            browningValue.setText(level + "/7");
+        });
+
+        browningBox.getChildren().addAll(browningLabel, browningSlider, browningValue);
+
+        // Toasting control
+        HBox toastingBox = new HBox(10);
+        toastingBox.setAlignment(Pos.CENTER);
+        Circle toastingIndicator = new Circle(10);
+        toastingIndicator.setFill(toaster.isToasting() ? Color.DARKORANGE : Color.GRAY);
+        Label toastingLabel = new Label(toaster.isToasting() ? "🔥 Toasting..." : "Ready");
+        toastingLabel.setStyle("-fx-font-size: 12pt;");
+
+        Button toastButton = new Button(toaster.isToasting() ? "⏹ Cancel" : "🍞 Toast");
+        toastButton.setStyle(
+                "-fx-background-color: #8D6E63; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8 16;");
+        toastButton.setOnAction(e -> {
+            if (toaster.isToasting()) {
+                toaster.stopToasting();
+                toastButton.setText("🍞 Toast");
+                toastingIndicator.setFill(Color.GRAY);
+                toastingLabel.setText("Ready");
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Toaster", toaster.getName() + " cancelled.", com.ui.models.NotificationType.INFO);
+            } else {
+                toaster.startToasting();
+                toastButton.setText("⏹ Cancel");
+                toastingIndicator.setFill(Color.DARKORANGE);
+                toastingLabel.setText("🔥 Toasting...");
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Toaster", toaster.getName() + " toasting at level " + toaster.getBrowningLevel(),
+                        com.ui.models.NotificationType.SUCCESS);
+            }
+        });
+
+        toastingBox.getChildren().addAll(toastingIndicator, toastingLabel, toastButton);
+
+        // Status label
+        Label statusLabel = new Label("Status: " + toaster.getStatus());
+        statusLabel.setStyle("-fx-font-size: 10pt; -fx-text-fill: #666;");
+
+        container.getChildren().addAll(header, browningBox, toastingBox, statusLabel);
+        return container;
+    }
+
+    /**
+     * Creates control panel for SmartCooker devices
+     */
+    private static Node createSmartCookerControl(SmartCooker cooker) {
+        VBox container = new VBox(10);
+        container.setPadding(new Insets(10));
+        container.setStyle("-fx-background-color: white; -fx-background-radius: 8px; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);");
+
+        // Header
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        Label nameLabel = new Label("🍳 " + cooker.getName());
+        nameLabel.setStyle("-fx-font-size: 14pt; -fx-font-weight: bold;");
+
+        ToggleButton toggleButton = new ToggleButton(cooker.isOn() ? "ON" : "OFF");
+        toggleButton.setSelected(cooker.isOn());
+        updateToggleStyle(toggleButton);
+        toggleButton.setOnAction(e -> {
+            if (toggleButton.isSelected()) {
+                cooker.turnOn();
+                toggleButton.setText("ON");
+            } else {
+                cooker.turnOff();
+                toggleButton.setText("OFF");
+            }
+            updateToggleStyle(toggleButton);
+        });
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        header.getChildren().addAll(nameLabel, spacer, toggleButton);
+
+        // Heat level control
+        HBox heatBox = new HBox(10);
+        heatBox.setAlignment(Pos.CENTER_LEFT);
+        Label heatLabel = new Label("Heat Level:");
+        Slider heatSlider = new Slider(1, 10, cooker.getTemperatureLevel());
+        heatSlider.setShowTickLabels(true);
+        heatSlider.setShowTickMarks(true);
+        heatSlider.setMajorTickUnit(1);
+        heatSlider.setMinorTickCount(0);
+        heatSlider.setSnapToTicks(true);
+        heatSlider.setPrefWidth(150);
+        Label heatValue = new Label(cooker.getTemperatureLevel() + "/10");
+        heatValue.setMinWidth(40);
+
+        heatSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int level = newVal.intValue();
+            cooker.setTemperatureLevel(level);
+            heatValue.setText(level + "/10");
+        });
+
+        heatBox.getChildren().addAll(heatLabel, heatSlider, heatValue);
+
+        // Burners control
+        HBox burnerBox = new HBox(10);
+        burnerBox.setAlignment(Pos.CENTER_LEFT);
+        Label burnerLabel = new Label("Active Burners:");
+        Spinner<Integer> burnerSpinner = new Spinner<>(0, cooker.getTotalBurners(), cooker.getActiveBurners());
+        burnerSpinner.setPrefWidth(80);
+        burnerSpinner.valueProperty().addListener((obs, oldVal, newVal) -> {
+            cooker.setActiveBurners(newVal);
+        });
+        Label burnerTotal = new Label("/ " + cooker.getTotalBurners());
+
+        burnerBox.getChildren().addAll(burnerLabel, burnerSpinner, burnerTotal);
+
+        // Cooking control
+        HBox cookingBox = new HBox(10);
+        cookingBox.setAlignment(Pos.CENTER);
+        Circle cookingIndicator = new Circle(10);
+        cookingIndicator.setFill(cooker.isCooking() ? Color.RED : Color.GRAY);
+        Label cookingLabel = new Label(cooker.isCooking() ? "🔥 Cooking..." : "Ready");
+        cookingLabel.setStyle("-fx-font-size: 12pt;");
+
+        Button cookButton = new Button(cooker.isCooking() ? "⏹ Stop" : "🍳 Start Cooking");
+        cookButton.setStyle(
+                "-fx-background-color: #E64A19; -fx-text-fill: white; -fx-font-size: 12pt; -fx-padding: 8 16;");
+        cookButton.setOnAction(e -> {
+            if (cooker.isCooking()) {
+                cooker.stopCooking();
+                cookButton.setText("🍳 Start Cooking");
+                cookingIndicator.setFill(Color.GRAY);
+                cookingLabel.setText("Ready");
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Cooker", cooker.getName() + " stopped.", com.ui.models.NotificationType.INFO);
+            } else {
+                cooker.startCooking();
+                cookButton.setText("⏹ Stop");
+                cookingIndicator.setFill(Color.RED);
+                cookingLabel.setText("🔥 Cooking...");
+                com.ui.utils.NotificationManager.getInstance().addNotification(
+                        "Cooker",
+                        cooker.getName() + " cooking with " + cooker.getActiveBurners() + " burner(s) at level "
+                                + cooker.getTemperatureLevel(),
+                        com.ui.models.NotificationType.SUCCESS);
+            }
+        });
+
+        cookingBox.getChildren().addAll(cookingIndicator, cookingLabel, cookButton);
+
+        // Status label
+        Label statusLabel = new Label("Status: " + cooker.getStatus());
+        statusLabel.setStyle("-fx-font-size: 10pt; -fx-text-fill: #666;");
+
+        container.getChildren().addAll(header, heatBox, burnerBox, cookingBox, statusLabel);
         return container;
     }
 

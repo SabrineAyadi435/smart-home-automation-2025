@@ -304,13 +304,13 @@ public class HomeController {
                     currentLocalTime.isBefore(scheduledLocalTime.plusMinutes(15))) {
 
                 String message = "Time for " + athanName + modeDescriptor + "!";
-                String detail = "It is now "
-                        + currentLocalTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+                // String detail = "It is now "
+                //         + currentLocalTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
 
                 // Send Toast Notification
                 com.ui.utils.NotificationManager.getInstance().addNotification(
                         "Prayer Time",
-                        message + "\n" + detail,
+                        message,
                         com.ui.models.NotificationType.INFO);
 
                 System.out.println("----------------------------------------------");

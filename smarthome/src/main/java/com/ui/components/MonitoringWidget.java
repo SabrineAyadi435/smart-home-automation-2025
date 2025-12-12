@@ -41,7 +41,7 @@ public class MonitoringWidget extends VBox {
 
         // Style value label
         valueLabel.getStyleClass().add("widget-value");
-        valueLabel.setStyle("-fx-font-size: 32pt; -fx-font-weight: bold; -fx-text-fill: #2196F3;");
+        valueLabel.setStyle("-fx-font-size: 32pt; -fx-font-weight: bold; -fx-text-fill: #85935E;");
 
         // Style unit label
         unitLabel.getStyleClass().add("widget-unit");

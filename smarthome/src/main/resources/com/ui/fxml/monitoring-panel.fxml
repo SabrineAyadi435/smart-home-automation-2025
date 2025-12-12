@@ -53,7 +53,7 @@
         <TableView fx:id="roomConsumptionTable" VBox.vgrow="ALWAYS"
                    style="-fx-background-color: white; -fx-background-radius: 8px;">
             <columns>
-                <TableColumn fx:id="roomNameColumn" text="Room" prefWidth="150" minWidth="100"/>
+                <TableColumn fx:id="roomNameColumn" text="Room" prefWidth="150" minWidth="100" />
                 <TableColumn fx:id="currentEnergyColumn" text="Current Energy (W)" prefWidth="150" minWidth="120"/>
                 <TableColumn fx:id="totalEnergyColumn" text="Total Energy (kWh)" prefWidth="150" minWidth="120"/>
                 <TableColumn fx:id="currentWaterColumn" text="Current Water (L/min)" prefWidth="150" minWidth="120"/>

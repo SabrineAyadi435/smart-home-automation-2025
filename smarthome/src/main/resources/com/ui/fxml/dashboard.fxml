@@ -41,7 +41,7 @@
             </ImageView>
 
             <!-- Dashboard Title -->
-            <Label text="Islamic        Smart Home" styleClass="nav-title" 
+            <Label text="Islamic Smart Home" styleClass="nav-title" 
                    style="-fx-text-fill: white; -fx-font-size: 20pt; -fx-font-weight: bold; -fx-padding: 0 0 20 0;"/>
             
             <!-- Navigation Buttons -->

@@ -200,17 +200,39 @@ public class HomeViewController {
         chimney.setStrokeWidth(2);
         floorPlanCanvas.getChildren().add(chimney);
 
-        // Draw Roof
-        javafx.scene.shape.Path roof = new javafx.scene.shape.Path();
-        roof.getElements().addAll(
-                new javafx.scene.shape.MoveTo(startX - 20, startY),
-                new javafx.scene.shape.LineTo(startX + (bodyWidth / 2), startY - 120),
-                new javafx.scene.shape.LineTo(startX + bodyWidth + 20, startY),
+        // Draw Dome Roof (Islamic style)
+        javafx.scene.shape.Path dome = new javafx.scene.shape.Path();
+        double domeHeight = 100; // Height of the dome
+        double domeWidth = bodyWidth + 40; // Width extends past house slightly
+        double domeStartX = startX - 20;
+        double domeEndX = startX + bodyWidth + 20;
+        double domePeakY = startY - domeHeight;
+        double domeControlY = startY - domeHeight * 1.8; // Control point for curve
+
+        dome.getElements().addAll(
+                new javafx.scene.shape.MoveTo(domeStartX, startY),
+                new javafx.scene.shape.QuadCurveTo(
+                        startX + (bodyWidth / 2), domeControlY, // Control point (top center, higher)
+                        domeEndX, startY), // End point (right side)
                 new javafx.scene.shape.ClosePath());
-        roof.setFill(javafx.scene.paint.Color.web("#795548"));
-        roof.setStroke(javafx.scene.paint.Color.BLACK);
-        roof.setStrokeWidth(2);
-        floorPlanCanvas.getChildren().add(roof);
+        dome.setFill(javafx.scene.paint.Color.web("#00695C")); // Islamic green
+        dome.setStroke(javafx.scene.paint.Color.web("#004D40"));
+        dome.setStrokeWidth(3);
+        floorPlanCanvas.getChildren().add(dome);
+
+        // Add crescent moon on top of dome
+        double crescentSize = 25;
+        double crescentX = startX + (bodyWidth / 2);
+        double crescentY = domePeakY + 15;
+
+        // Crescent moon using two arcs
+        javafx.scene.shape.Arc crescentOuter = new javafx.scene.shape.Arc(
+                crescentX, crescentY, crescentSize, crescentSize, 0, 180);
+        crescentOuter.setType(javafx.scene.shape.ArcType.OPEN);
+        crescentOuter.setFill(null);
+        // crescentOuter.setStroke(javafx.scene.paint.Color.web("#FFD700")); // Gold
+        crescentOuter.setStrokeWidth(4);
+        floorPlanCanvas.getChildren().add(crescentOuter);
 
         // Draw House Body
         javafx.scene.shape.Rectangle body = new javafx.scene.shape.Rectangle(

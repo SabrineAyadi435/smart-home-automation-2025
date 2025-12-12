@@ -138,6 +138,15 @@ public class DashboardApplication extends Application {
                 EnergyMode.NORMAL);
         kitchen.addDevice(smokeDetector);
 
+        SmartMicrowave microwave = new SmartMicrowave("microwave-001", "Smart Microwave", EnergyMode.NORMAL);
+        kitchen.addDevice(microwave);
+
+        SmartToaster toaster = new SmartToaster("toaster-001", "Smart Toaster", EnergyMode.NORMAL);
+        kitchen.addDevice(toaster);
+
+        SmartCooker cooker = new SmartCooker("cooker-001", "Smart Cooker", EnergyMode.NORMAL);
+        kitchen.addDevice(cooker);
+
         home.addRoom(kitchen);
 
         // Create Bedroom with devices

@@ -164,7 +164,7 @@ public class DashboardController {
         simulatedTimeLabel.setText(timeSimulator.getFormattedDateTime());
 
         // Setup speed combo box
-        speedCombo.getItems().addAll("0.1x", "0.5x", "1x", "2x", "5x", "10x", "50x", "100x");
+        speedCombo.getItems().addAll("0.1x", "0.5x", "1x", "2x", "5x", "10x", "50x", "100x", "500x");
         speedCombo.setValue("1x");
         speedCombo.setOnAction(e -> {
             String selected = speedCombo.getValue();
@@ -490,16 +490,39 @@ public class DashboardController {
         // Perform refresh in background to avoid blocking UI
         new Thread(() -> {
             try {
-                // Simulate data refresh
-                Thread.sleep(500);
+                // Small delay for visual feedback
+                Thread.sleep(300);
 
                 // Update UI on JavaFX Application Thread
                 Platform.runLater(() -> {
+                    // Recalculate energy for all rooms
+                    if (homeController != null && homeController.getHome() != null) {
+                        for (com.room.Room room : homeController.getHome().getRooms()) {
+                            room.recalculateCurrentEnergyConsumption();
+                        }
+                    }
+
+                    // Update timestamp
                     updateLastUpdatedTime();
                     updateStatus("Data refreshed successfully");
 
-                    // TODO: Trigger refresh on active view controller
-                    // This will be implemented when view controllers are created
+                    // Reload the current active view to refresh its data
+                    if (activeButton == homeViewButton) {
+                        showHomeView();
+                    } else if (activeButton == monitoringViewButton) {
+                        showMonitoringView();
+                    } else if (activeButton == climateViewButton) {
+                        showClimateView();
+                    } else if (activeButton == securityViewButton) {
+                        showSecurityView();
+                    }
+
+                    // Show notification
+                    com.ui.utils.NotificationManager.getInstance().addNotification(
+                            "Refresh Complete",
+                            "All dashboard data has been refreshed.",
+                            com.ui.models.NotificationType.SUCCESS);
+
                     System.out.println("All data refreshed");
                 });
             } catch (InterruptedException e) {
@@ -526,7 +549,7 @@ public class DashboardController {
         // Set new active button
         activeButton = button;
         if (activeButton != null) {
-            activeButton.setStyle("-fx-background-color: #1565C0; -fx-text-fill: white; " +
+            activeButton.setStyle("-fx-background-color: #15c057ff; -fx-text-fill: white; " +
                     "-fx-font-size: 14pt; -fx-alignment: center-left; -fx-padding: 10 20; " +
                     "-fx-background-radius: 4;");
         }
