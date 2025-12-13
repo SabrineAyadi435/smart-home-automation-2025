@@ -9,6 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
+
 import com.controller.HomeController;
 import com.devices.SmartDevice;
 import com.enums.AirQuality;
@@ -275,7 +277,7 @@ public class RoomPanelController {
         devicesContainer.getChildren().clear();
 
         // Get all devices in the room
-        var devices = room.getDevices();
+        List<SmartDevice> devices = room.getDevices();
 
         if (devices.isEmpty()) {
             // Show "no devices" message
