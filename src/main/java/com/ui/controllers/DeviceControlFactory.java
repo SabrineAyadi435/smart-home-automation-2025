@@ -33,7 +33,7 @@ public class DeviceControlFactory {
         } else if (device instanceof SmartTV) {
             return createSmartTVControl((SmartTV) device, room);
         } else if (device instanceof Speaker) {
-            return createSpeakerControl((Speaker) device, room);
+            return createSpeakerControl((Speaker) device, controller, room);
         } else if (device instanceof DoorLock) {
             return createDoorLockControl((DoorLock) device, room);
         } else if (device instanceof SecurityCamera) {
@@ -80,7 +80,7 @@ public class DeviceControlFactory {
         } else if (device instanceof SmartTV) {
             return createSmartTVControl((SmartTV) device);
         } else if (device instanceof Speaker) {
-            return createSpeakerControl((Speaker) device);
+            return createSpeakerControl((Speaker) device, controller);
         } else if (device instanceof DoorLock) {
             return createDoorLockControl((DoorLock) device);
         } else if (device instanceof SecurityCamera) {
@@ -351,7 +351,7 @@ public class DeviceControlFactory {
     /**
      * Creates control panel for Speaker devices
      */
-    private static Node createSpeakerControl(Speaker speaker) {
+    private static Node createSpeakerControl(Speaker speaker, HomeController controller) {
         VBox container = new VBox(10);
         container.setPadding(new Insets(10));
         container.setStyle("-fx-background-color: white; -fx-background-radius: 8px; " +
@@ -426,7 +426,43 @@ public class DeviceControlFactory {
         Label statusLabel = new Label("Status: " + speaker.getStatus());
         statusLabel.setStyle("-fx-font-size: 10pt; -fx-text-fill: #666;");
 
-        container.getChildren().addAll(header, volumeBox, playbackBox, statusLabel);
+        // Voice Command Simulation (Educational Hub)
+        VBox voiceBox = new VBox(5);
+        voiceBox.setAlignment(Pos.CENTER_LEFT);
+        Label voiceLabel = new Label("🎤 Voice Commands (Educational):");
+        voiceLabel.setStyle("-fx-font-weight: bold;");
+
+        HBox commandsBox = new HBox(5);
+        commandsBox.setAlignment(Pos.CENTER_LEFT);
+
+        Button cmdProphet = new Button("Prophet");
+        cmdProphet.setOnAction(e -> {
+            if (controller != null)
+                controller.handleEducationalCommand("Tell me about the Prophet");
+        });
+
+        Button cmdQuran = new Button("Quran");
+        cmdQuran.setOnAction(e -> {
+            if (controller != null)
+                controller.handleEducationalCommand("What is the Quran?");
+        });
+
+        Button cmdHistory = new Button("History");
+        cmdHistory.setOnAction(e -> {
+            if (controller != null)
+                controller.handleEducationalCommand("Tell me about Islamic History");
+        });
+
+        Button cmdRamadan = new Button("Ramadan");
+        cmdRamadan.setOnAction(e -> {
+            if (controller != null)
+                controller.handleEducationalCommand("Tell me about Ramadan");
+        });
+
+        commandsBox.getChildren().addAll(cmdProphet, cmdQuran, cmdHistory, cmdRamadan);
+        voiceBox.getChildren().addAll(voiceLabel, commandsBox);
+
+        container.getChildren().addAll(header, volumeBox, playbackBox, voiceBox, statusLabel);
         return container;
     }
 
@@ -892,16 +928,27 @@ public class DeviceControlFactory {
             new Thread(() -> {
                 mirror.displayIslamicCalendar();
                 String content = mirror.getIslamicCalendarContent();
-                Platform.runLater(() -> {
+                javafx.application.Platform.runLater(() -> {
                     com.ui.utils.NotificationManager.getInstance().addNotification(
-                            "📅 " + mirror.getName() + " - Islamic Calendar",
-                            content,
-                            com.ui.models.NotificationType.MIRROR);
+                            "Islamic Calendar", content, com.ui.models.NotificationType.INFO);
                 });
             }).start();
         });
 
-        actionBox.getChildren().addAll(briefingBtn, refreshVerseBtn, calendarBtn);
+        Button scheduleBtn = new Button("📅 Show Schedule");
+        scheduleBtn.setStyle("-fx-font-size: 11pt; -fx-padding: 6px 12px;");
+        scheduleBtn.setOnAction(e -> {
+            new Thread(() -> {
+                // mirror.syncReminders(); // Called inside getScheduleContent now
+                String content = mirror.getScheduleContent();
+                javafx.application.Platform.runLater(() -> {
+                    com.ui.utils.NotificationManager.getInstance().addNotification(
+                            "Today's Schedule", content, com.ui.models.NotificationType.INFO);
+                });
+            }).start();
+        });
+
+        actionBox.getChildren().addAll(briefingBtn, calendarBtn, scheduleBtn);
 
         // Status label
         Label statusLabel = new Label("Status: " + mirror.getStatus());
@@ -1452,8 +1499,8 @@ public class DeviceControlFactory {
         return control;
     }
 
-    private static Node createSpeakerControl(Speaker speaker, Room room) {
-        Node control = createSpeakerControl(speaker);
+    private static Node createSpeakerControl(Speaker speaker, HomeController controller, Room room) {
+        Node control = createSpeakerControl(speaker, controller);
         addEnergyCallbackToToggle(control, room);
         return control;
     }

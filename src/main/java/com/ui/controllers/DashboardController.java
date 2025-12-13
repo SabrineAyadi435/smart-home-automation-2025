@@ -4,17 +4,24 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import com.controller.HomeController;
 import com.controller.SecurityController;
+import com.ui.components.NotificationPanel;
 import com.ui.utils.UIUpdater;
 import com.ui.controllers.RoomPanelController;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * Main controller for the Dashboard.
@@ -79,12 +86,20 @@ public class DashboardController {
 
     // Time Simulator
     private com.utils.TimeSimulator timeSimulator;
+    private com.ui.utils.NotificationManager notificationManager;
 
     // Current active view button
     private Button activeButton;
 
+    // Current active view controller
+    private Object currentViewController;
+
     // Date formatter for last updated timestamp
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    // Custom formatter to include Day Name
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd (EEEE) HH:mm:ss");
 
     /**
      * Initializes the controller after FXML loading.
@@ -157,12 +172,12 @@ public class DashboardController {
         // Bind time label to simulated time
         timeSimulator.simulatedTimeProperty().addListener((obs, oldVal, newVal) -> {
             Platform.runLater(() -> {
-                simulatedTimeLabel.setText(timeSimulator.getFormattedDateTime());
+                simulatedTimeLabel.setText(newVal.format(DISPLAY_FORMATTER));
             });
         });
 
         // Initialize label
-        simulatedTimeLabel.setText(timeSimulator.getFormattedDateTime());
+        simulatedTimeLabel.setText(timeSimulator.now().format(DISPLAY_FORMATTER));
 
         // Setup speed combo box
         speedCombo.getItems().addAll("0.1x", "0.5x", "1x", "2x", "5x", "10x", "50x", "100x", "500x");
@@ -484,13 +499,6 @@ public class DashboardController {
     }
 
     /**
-     * Refreshes all data across the dashboard.
-     * Updates monitoring widgets, room displays, and device statuses.
-     */
-    // Current active view controller
-    private Object currentViewController;
-
-    /**
      * Sets the current active view controller.
      * 
      * @param controller The controller of the currently displayed view
@@ -611,18 +619,11 @@ public class DashboardController {
     private void showPlaceholder(String title, String message) {
         VBox placeholder = new VBox(20);
         placeholder.setAlignment(javafx.geometry.Pos.CENTER);
-        placeholder.setStyle("-fx-background-color: #FAFAFA;");
-
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 32pt; -fx-font-weight: bold; -fx-text-fill: #2196F3;");
-
-        Label messageLabel = new Label(message);
-        messageLabel.setStyle("-fx-font-size: 16pt; -fx-text-fill: #757575;");
-
-        Label infoLabel = new Label("✓ Navigation working correctly");
-        infoLabel.setStyle("-fx-font-size: 14pt; -fx-text-fill: #4CAF50;");
-
-        placeholder.getChildren().addAll(titleLabel, messageLabel, infoLabel);
+        titleLabel.setStyle("-fx-font-size: 24pt; -fx-font-weight: bold; -fx-text-fill: #BDBDBD;");
+        Label msgLabel = new Label(message);
+        msgLabel.setStyle("-fx-font-size: 14pt; -fx-text-fill: #9E9E9E;");
+        placeholder.getChildren().addAll(titleLabel, msgLabel);
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(placeholder);

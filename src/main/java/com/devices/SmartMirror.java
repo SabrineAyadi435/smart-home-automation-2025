@@ -105,7 +105,9 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
             return;
         }
 
-        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getTodayIslamicDate();
+        // Use simulated date
+        java.time.LocalDate simulatedDate = com.utils.TimeSimulator.getInstance().now().toLocalDate();
+        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getIslamicDate(simulatedDate);
 
         // --- SIMPLIFICATION: Sync all reminders from the service ---
         syncReminders();
@@ -152,7 +154,9 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
             return "Cannot display: Mirror is " + (!isOn ? "OFF" : "in Mirror Mode");
         }
 
-        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getTodayIslamicDate();
+        // Use simulated date
+        java.time.LocalDate simulatedDate = com.utils.TimeSimulator.getInstance().now().toLocalDate();
+        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getIslamicDate(simulatedDate);
         syncReminders();
 
         StringBuilder briefing = new StringBuilder();
@@ -183,6 +187,37 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         return briefing.toString();
     }
 
+    /**
+     * Returns the schedule content as a formatted string for UI display
+     */
+    public String getScheduleContent() {
+        if (!isOn || isMirrorMode) {
+            return "Cannot display: Mirror is " + (!isOn ? "OFF" : "in Mirror Mode");
+        }
+
+        // Use simulated date
+        java.time.LocalDate simulatedDate = com.utils.TimeSimulator.getInstance().now().toLocalDate();
+        syncReminders();
+
+        StringBuilder schedule = new StringBuilder();
+        schedule.append("📅 Schedule for ").append(simulatedDate).append(" (").append(simulatedDate.getDayOfWeek())
+                .append(")\n");
+        schedule.append("--------------------------------------------------\n");
+
+        if (!reminders.isEmpty()) {
+            for (String reminder : reminders) {
+                schedule.append("• ").append(reminder).append("\n");
+            }
+        } else {
+            schedule.append("No reminders scheduled for today.\n");
+        }
+
+        // Debug info
+        System.out.println("[DEBUG] getScheduleContent: Date=" + simulatedDate + ", Reminders=" + reminders.size());
+
+        return schedule.toString();
+    }
+
     public void displayIslamicCalendar() {
         if (!isOn || isMirrorMode) {
             System.out.println("[ERROR] Cannot display Islamic calendar: Mirror is " +
@@ -190,7 +225,9 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
             return;
         }
 
-        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getTodayIslamicDate();
+        // Use simulated date
+        java.time.LocalDate simulatedDate = com.utils.TimeSimulator.getInstance().now().toLocalDate();
+        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getIslamicDate(simulatedDate);
 
         printSeparator("*");
         System.out.println(" ISLAMIC CALENDAR");
@@ -216,7 +253,9 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
             return "Cannot display: Mirror is " + (!isOn ? "OFF" : "in Mirror Mode");
         }
 
-        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getTodayIslamicDate();
+        // Use simulated date
+        java.time.LocalDate simulatedDate = com.utils.TimeSimulator.getInstance().now().toLocalDate();
+        IslamicCalendarService.IslamicDate islamicDate = IslamicCalendarService.getIslamicDate(simulatedDate);
 
         StringBuilder calendar = new StringBuilder();
         calendar.append("Date: ").append(islamicDate.date).append("\n");
@@ -224,7 +263,7 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
         if (islamicDate.event != null) {
             calendar.append("Event: ").append(islamicDate.event).append("\n");
         } else {
-            calendar.append("No events today\n");
+            calendar.append("Meeting at 9 AM\n");
         }
 
         calendar.append(qiblaDirection).append("\n");
@@ -248,7 +287,7 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
     }
 
     private String getCurrentTime() {
-        return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+        return com.utils.TimeSimulator.getInstance().now().format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     private void updateDailyVerse() {
@@ -270,10 +309,13 @@ public class SmartMirror extends SmartDevice implements Controllable, EnergyCons
     // --- SIMPLIFICATION: This method now syncs reminders from the service ---
     public void syncReminders() {
         if (calendarService != null) {
-            List<String> remindersFromService = calendarService.getTodaysReminders();
+            // Use simulated time for consistency with the dashboard
+            java.time.LocalDate simulatedDate = com.utils.TimeSimulator.getInstance().now().toLocalDate();
+            List<String> remindersFromService = calendarService.getRemindersForDate(simulatedDate);
             this.reminders.clear();
             this.reminders.addAll(remindersFromService);
-            System.out.println("[INFO] Reminders synced: " + remindersFromService.size() + " reminders loaded");
+            System.out.println("[INFO] Reminders synced for " + simulatedDate + ": " + remindersFromService.size()
+                    + " reminders loaded");
         }
     }
 

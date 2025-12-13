@@ -68,6 +68,8 @@
                     styleClass="nav-button"
                     prefWidth="180" prefHeight="40"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center-left; -fx-padding: 10 20;"/>
+
+
             
             <!-- Spacer -->
             <VBox VBox.vgrow="ALWAYS"/>
@@ -80,6 +82,8 @@
                     style="-fx-background-color: #85935E; -fx-text-fill: white; -fx-font-size: 14pt; -fx-alignment: center; -fx-padding: 10 20; -fx-background-radius: 4;"/>
         </VBox>
     </left>
+
+
     
     <!-- Center: Content Area -->
     <center>

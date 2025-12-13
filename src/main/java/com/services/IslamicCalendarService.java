@@ -12,10 +12,14 @@ public class IslamicCalendarService {
     private static final String API_BASE = "https://api.aladhan.com/v1/gToH";
 
     public static IslamicDate getTodayIslamicDate() {
+        return getIslamicDate(LocalDate.now());
+    }
+
+    public static IslamicDate getIslamicDate(LocalDate date) {
         try {
-            // Get today's date for the API call
-            LocalDate today = LocalDate.now();
-            String dateParam = today.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            // Get date for the API call
+            String dateParam = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
             String urlString = API_BASE + "?date=" + dateParam;
 
             System.out.println("🕌 Fetching Islamic date from API: " + urlString);

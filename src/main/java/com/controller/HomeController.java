@@ -15,6 +15,7 @@ import com.exceptions.InvalidOperationException;
 import com.home.Home;
 import com.interfaces.EnergyConsumer;
 import com.room.Room;
+import com.services.EducationalService;
 
 public class HomeController {
     private Home home;
@@ -30,6 +31,7 @@ public class HomeController {
     private boolean isRamadanModeActive = false; // New flag for Ramadan Mode
     private final Map<String, Time> athanTimes;
     private final Map<String, Time> ramadanAthanTimes; // Specific times for Ramadan
+    private EducationalService educationalService;
     // ---------------------------
     private static final long ONE_MINUTE_IN_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
@@ -57,6 +59,9 @@ public class HomeController {
         ramadanAthanTimes.put("Fajr", Time.valueOf("05:00:00"));
         ramadanAthanTimes.put("Dhuhr", Time.valueOf("12:45:00"));
         ramadanAthanTimes.put("Asr", Time.valueOf("16:15:00"));
+        ramadanAthanTimes.put("Asr", Time.valueOf("16:15:00"));
+
+        this.educationalService = new EducationalService();
     }
 
     public void listAllDevices() {
@@ -305,7 +310,8 @@ public class HomeController {
 
                 String message = "Time for " + athanName + modeDescriptor + "!";
                 // String detail = "It is now "
-                //         + currentLocalTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+                // +
+                // currentLocalTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
 
                 // Send Toast Notification
                 com.ui.utils.NotificationManager.getInstance().addNotification(
@@ -327,6 +333,25 @@ public class HomeController {
 
                 // Mark as notified
                 notifiedEvents.add(eventKey);
+
+                // Mute all Smart TVs
+                for (SmartDevice device : home.getAllDevices()) {
+                    if (device instanceof com.devices.SmartTV) {
+                        com.devices.SmartTV tv = (com.devices.SmartTV) device;
+                        if (tv.isOn()) {
+                            tv.mute();
+                            // Unmute after 5 seconds (real-time)
+                            new Thread(() -> {
+                                try {
+                                    Thread.sleep(5000);
+                                    tv.unmute();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }).start();
+                        }
+                    }
+                }
             }
         }
     }
@@ -457,6 +482,24 @@ public class HomeController {
         home.setCurrentEnergyConsumption();
         home.setTotalwaterConsumption();
         home.setCurrentwaterConsumption();
+    }
+
+    // --- Educational Hub Integration ---
+
+    public void handleEducationalCommand(String command) {
+        System.out.println("[Educational Hub] Processing command: " + command);
+        String response = educationalService.processCommand(command);
+        System.out.println("[Educational Hub] Response: " + response);
+
+        // Send notification to UI
+        com.ui.utils.NotificationManager.getInstance().addNotification(
+                "Educational Hub",
+                response,
+                com.ui.models.NotificationType.INFO);
+    }
+
+    public String getEducationalResponse(String command) {
+        return educationalService.processCommand(command);
     }
 
 }
