@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import com.controller.HomeController;
 import com.controller.SecurityController;
 import com.ui.utils.UIUpdater;
+import com.ui.controllers.RoomPanelController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -299,6 +300,7 @@ public class DashboardController {
             if (homeViewController != null && homeController != null) {
                 homeViewController.setHomeController(homeController);
                 homeViewController.setDashboardController(this); // Fix: Set dashboard controller for navigation
+                setCurrentViewController(homeViewController);
 
                 // Register with UIUpdater for auto-refresh
                 if (uiUpdater != null) {
@@ -347,6 +349,7 @@ public class DashboardController {
             com.ui.controllers.MonitoringController monitoringController = loader.getController();
             if (monitoringController != null && homeController != null) {
                 monitoringController.setHomeController(homeController);
+                setCurrentViewController(monitoringController);
 
                 // Register with UIUpdater for auto-refresh
                 if (uiUpdater != null) {
@@ -397,6 +400,7 @@ public class DashboardController {
             ClimateController climateController = loader.getController();
             if (climateController != null && homeController != null) {
                 climateController.setHomeController(homeController);
+                setCurrentViewController(climateController);
 
                 // Register with UIUpdater
                 if (uiUpdater != null) {
@@ -448,6 +452,7 @@ public class DashboardController {
             SecurityPanelController securityController = loader.getController();
             if (securityController != null && homeController != null) {
                 securityController.setHomeController(homeController);
+                setCurrentViewController(securityController);
 
                 // Register with UIUpdater
                 if (uiUpdater != null) {
@@ -482,6 +487,22 @@ public class DashboardController {
      * Refreshes all data across the dashboard.
      * Updates monitoring widgets, room displays, and device statuses.
      */
+    // Current active view controller
+    private Object currentViewController;
+
+    /**
+     * Sets the current active view controller.
+     * 
+     * @param controller The controller of the currently displayed view
+     */
+    public void setCurrentViewController(Object controller) {
+        this.currentViewController = controller;
+    }
+
+    /**
+     * Refreshes all data across the dashboard.
+     * Updates monitoring widgets, room displays, and device statuses.
+     */
     @FXML
     public void refreshAllData() {
         System.out.println("Refreshing all dashboard data");
@@ -506,8 +527,12 @@ public class DashboardController {
                     updateLastUpdatedTime();
                     updateStatus("Data refreshed successfully");
 
-                    // Reload the current active view to refresh its data
-                    if (activeButton == homeViewButton) {
+                    // Check if we are in a room detail view
+                    if (currentViewController instanceof RoomPanelController) {
+                        ((RoomPanelController) currentViewController).refresh();
+                    }
+                    // Otherwise reload the current active main view
+                    else if (activeButton == homeViewButton) {
                         showHomeView();
                     } else if (activeButton == monitoringViewButton) {
                         showMonitoringView();

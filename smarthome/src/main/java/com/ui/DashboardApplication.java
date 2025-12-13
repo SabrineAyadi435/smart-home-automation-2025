@@ -184,6 +184,10 @@ public class DashboardApplication extends Application {
         AirQualitySensor airSensor = new AirQualitySensor("air-001", "Bathroom Air Sensor", EnergyMode.NORMAL);
         bathroom.addDevice(airSensor);
 
+        SmartWashingMachine washingMachine = new SmartWashingMachine("washer-001", "Smart Washing Machine",
+                EnergyMode.NORMAL);
+        bathroom.addDevice(washingMachine);
+
         home.addRoom(bathroom);
 
         // Create Prayer Room with devices

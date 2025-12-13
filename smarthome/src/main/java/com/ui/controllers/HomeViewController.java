@@ -351,6 +351,7 @@ public class HomeViewController {
                 roomPanelController.setHomeController(homeController);
                 roomPanelController.setDashboardController(dashboardController);
                 roomPanelController.setRoom(room);
+                dashboardController.setCurrentViewController(roomPanelController);
             }
 
             // Display the room panel in the content area

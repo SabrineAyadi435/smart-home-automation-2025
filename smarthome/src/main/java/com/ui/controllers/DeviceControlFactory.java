@@ -5,6 +5,7 @@ import com.controller.HomeController;
 import com.room.Room;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -53,6 +54,8 @@ public class DeviceControlFactory {
             return createSmartToasterControl((SmartToaster) device);
         } else if (device instanceof SmartCooker) {
             return createSmartCookerControl((SmartCooker) device);
+        } else if (device instanceof SmartWashingMachine) {
+            return createSmartWashingMachineControl((SmartWashingMachine) device);
         } else if (device instanceof MotionSensor || device instanceof DoorWindowSensor ||
                 device instanceof SmokeDetector || device instanceof AirQualitySensor) {
             return createSensorControl(device);
@@ -98,6 +101,8 @@ public class DeviceControlFactory {
             return createSmartToasterControl((SmartToaster) device);
         } else if (device instanceof SmartCooker) {
             return createSmartCookerControl((SmartCooker) device);
+        } else if (device instanceof SmartWashingMachine) {
+            return createSmartWashingMachineControl((SmartWashingMachine) device);
         } else if (device instanceof MotionSensor || device instanceof DoorWindowSensor ||
                 device instanceof SmokeDetector || device instanceof AirQualitySensor) {
             return createSensorControl(device);
@@ -854,34 +859,46 @@ public class DeviceControlFactory {
         Button briefingBtn = new Button("📋 Show Briefing");
         briefingBtn.setStyle("-fx-font-size: 11pt; -fx-padding: 6px 12px;");
         briefingBtn.setOnAction(e -> {
-            mirror.displayBriefing();
-            String content = mirror.getBriefingContent();
-            com.ui.utils.NotificationManager.getInstance().addNotification(
-                    "📋 " + mirror.getName() + " - Daily Briefing",
-                    content,
-                    com.ui.models.NotificationType.MIRROR);
+            new Thread(() -> {
+                mirror.displayBriefing();
+                String content = mirror.getBriefingContent();
+                Platform.runLater(() -> {
+                    com.ui.utils.NotificationManager.getInstance().addNotification(
+                            "📋 " + mirror.getName() + " - Daily Briefing",
+                            content,
+                            com.ui.models.NotificationType.MIRROR);
+                });
+            }).start();
         });
 
         Button refreshVerseBtn = new Button("📖 Refresh Verse");
         refreshVerseBtn.setStyle("-fx-font-size: 11pt; -fx-padding: 6px 12px;");
         refreshVerseBtn.setOnAction(e -> {
-            mirror.refreshVerse();
-            String content = mirror.getCurrentVerseContent();
-            com.ui.utils.NotificationManager.getInstance().addNotification(
-                    "📖 " + mirror.getName() + " - Quran Verse",
-                    content,
-                    com.ui.models.NotificationType.MIRROR);
+            new Thread(() -> {
+                mirror.refreshVerse();
+                String content = mirror.getCurrentVerseContent();
+                Platform.runLater(() -> {
+                    com.ui.utils.NotificationManager.getInstance().addNotification(
+                            "📖 " + mirror.getName() + " - Quran Verse",
+                            content,
+                            com.ui.models.NotificationType.MIRROR);
+                });
+            }).start();
         });
 
         Button calendarBtn = new Button("📅 Islamic Calendar");
         calendarBtn.setStyle("-fx-font-size: 11pt; -fx-padding: 6px 12px;");
         calendarBtn.setOnAction(e -> {
-            mirror.displayIslamicCalendar();
-            String content = mirror.getIslamicCalendarContent();
-            com.ui.utils.NotificationManager.getInstance().addNotification(
-                    "📅 " + mirror.getName() + " - Islamic Calendar",
-                    content,
-                    com.ui.models.NotificationType.MIRROR);
+            new Thread(() -> {
+                mirror.displayIslamicCalendar();
+                String content = mirror.getIslamicCalendarContent();
+                Platform.runLater(() -> {
+                    com.ui.utils.NotificationManager.getInstance().addNotification(
+                            "📅 " + mirror.getName() + " - Islamic Calendar",
+                            content,
+                            com.ui.models.NotificationType.MIRROR);
+                });
+            }).start();
         });
 
         actionBox.getChildren().addAll(briefingBtn, refreshVerseBtn, calendarBtn);
@@ -1518,4 +1535,99 @@ public class DeviceControlFactory {
             }
         }
     }
+
+    /**
+     * Creates control panel for SmartWashingMachine devices
+     */
+    private static Node createSmartWashingMachineControl(SmartWashingMachine machine) {
+        VBox container = new VBox(10);
+        container.setPadding(new Insets(10));
+        container.setStyle("-fx-background-color: white; -fx-background-radius: 8px; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);");
+
+        // Header
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        Label nameLabel = new Label("🧺 " + machine.getName());
+        nameLabel.setStyle("-fx-font-size: 14pt; -fx-font-weight: bold;");
+
+        ToggleButton toggleButton = new ToggleButton(machine.isOn() ? "ON" : "OFF");
+        toggleButton.setSelected(machine.isOn());
+        updateToggleStyle(toggleButton);
+        toggleButton.setOnAction(e -> {
+            if (toggleButton.isSelected()) {
+                machine.turnOn();
+                toggleButton.setText("ON");
+            } else {
+                machine.turnOff();
+                toggleButton.setText("OFF");
+            }
+            updateToggleStyle(toggleButton);
+        });
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        header.getChildren().addAll(nameLabel, spacer, toggleButton);
+
+        // Cycle control
+        HBox cycleBox = new HBox(10);
+        cycleBox.setAlignment(Pos.CENTER_LEFT);
+        Label cycleLabel = new Label("Cycle:");
+        ComboBox<String> cycleCombo = new ComboBox<>();
+        cycleCombo.getItems().addAll("Cotton", "Quick", "Delicate", "Heavy Duty");
+        cycleCombo.setValue(machine.getCycleType());
+        cycleCombo.setOnAction(e -> machine.setCycleType(cycleCombo.getValue()));
+
+        cycleBox.getChildren().addAll(cycleLabel, cycleCombo);
+
+        // Temperature control
+        HBox tempBox = new HBox(10);
+        tempBox.setAlignment(Pos.CENTER_LEFT);
+        Label tempLabel = new Label("Temp:");
+        ComboBox<Integer> tempCombo = new ComboBox<>();
+        tempCombo.getItems().addAll(20, 30, 40, 60, 90);
+        tempCombo.setValue(machine.getTemperature());
+        tempCombo.setOnAction(e -> machine.setTemperature(tempCombo.getValue()));
+        Label tempUnit = new Label("°C");
+
+        tempBox.getChildren().addAll(tempLabel, tempCombo, tempUnit);
+
+        // Spin Speed control
+        HBox spinBox = new HBox(10);
+        spinBox.setAlignment(Pos.CENTER_LEFT);
+        Label spinLabel = new Label("Spin:");
+        ComboBox<Integer> spinCombo = new ComboBox<>();
+        spinCombo.getItems().addAll(400, 600, 800, 1000, 1200, 1400);
+        spinCombo.setValue(machine.getSpinSpeed());
+        spinCombo.setOnAction(e -> machine.setSpinSpeed(spinCombo.getValue()));
+        Label spinUnit = new Label("RPM");
+
+        spinBox.getChildren().addAll(spinLabel, spinCombo, spinUnit);
+
+        // Start/Stop control
+        HBox controlBox = new HBox(10);
+        controlBox.setAlignment(Pos.CENTER);
+        Button startButton = new Button(machine.isRunning() ? "Stop Wash" : "Start Wash");
+        startButton.setStyle("-fx-font-size: 12pt; -fx-padding: 8px 16px;");
+
+        Label statusLabel = new Label("Status: " + machine.getStatus());
+        statusLabel.setStyle("-fx-font-size: 10pt; -fx-text-fill: #666;");
+
+        startButton.setOnAction(e -> {
+            if (machine.isRunning()) {
+                machine.stopWash();
+                startButton.setText("Start Wash");
+            } else {
+                machine.startWash();
+                startButton.setText("Stop Wash");
+            }
+            statusLabel.setText("Status: " + machine.getStatus());
+        });
+
+        controlBox.getChildren().add(startButton);
+
+        container.getChildren().addAll(header, cycleBox, tempBox, spinBox, controlBox, statusLabel);
+        return container;
+    }
+
 }

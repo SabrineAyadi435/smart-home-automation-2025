@@ -57,7 +57,8 @@ public class AddDeviceDialog extends Dialog<SmartDevice> {
                 "DoorWindowSensor",
                 "SmokeDetector",
                 "AirQualitySensor",
-                "AlarmSiren");
+                "AlarmSiren",
+                "SmartWashingMachine");
         deviceTypeCombo.setPromptText("Select device type");
         deviceTypeCombo.setPrefWidth(300);
 
@@ -209,6 +210,7 @@ public class AddDeviceDialog extends Dialog<SmartDevice> {
                 case "SmokeDetector" -> new SmokeDetector(deviceId, deviceName, "Room", energyMode); // Default location
                 case "AirQualitySensor" -> new AirQualitySensor(deviceId, deviceName, energyMode);
                 case "AlarmSiren" -> new AlarmSiren(deviceId, deviceName, energyMode);
+                case "SmartWashingMachine" -> new SmartWashingMachine(deviceId, deviceName, energyMode);
                 default -> {
                     System.err.println("Unknown device type: " + deviceType);
                     yield null;
